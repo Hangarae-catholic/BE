@@ -53,7 +53,7 @@ public class Team extends BaseEntity {
     private TeamStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Builder
