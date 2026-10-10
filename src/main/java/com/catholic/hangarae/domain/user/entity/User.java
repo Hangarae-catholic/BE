@@ -38,6 +38,44 @@ public class User extends BaseEntity {
 
     private String password;
 
+    @Column(length = 2048)
+    private String refreshToken;
+
+    // 로그인 실패 횟수
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int failedLoginAttempts;
+
+    public boolean isLoginRestricted() {
+        return failedLoginAttempts >= 5;
+    }
+
+    public void recordLoginFailure() {
+        this.failedLoginAttempts++;
+    }
+
+    public void resetLoginFailures() {
+        this.failedLoginAttempts = 0;
+    }
+
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+        resetLoginFailures();
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public static User createLocalUser(String loginId, String name, String nickname, String email, String password) {
+        return User.builder()
+                .loginId(loginId)
+                .name(name)
+                .nickname(nickname)
+                .email(email)
+                .password(password)
+                .build();
+    }
+
     @Builder
     public User(String nickname, String name, String email, UserCharacter character, StudentStatus status, String loginId, String password) {
         this.nickname = nickname;
