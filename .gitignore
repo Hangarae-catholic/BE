@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# 테스트 코드
+src/test/java/
