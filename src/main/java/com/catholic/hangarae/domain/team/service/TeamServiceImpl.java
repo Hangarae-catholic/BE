@@ -1,7 +1,6 @@
 package com.catholic.hangarae.domain.team.service;
 
 
-import com.catholic.hangarae.domain.department.entity.Department;
 import com.catholic.hangarae.domain.department.vo.DepartmentType;
 import com.catholic.hangarae.domain.image.entity.Image;
 import com.catholic.hangarae.domain.image.repository.ImageRepository;
@@ -22,11 +21,11 @@ import com.catholic.hangarae.domain.user.vo.UserDepartmentType;
 import com.catholic.hangarae.global.apiPayLoad.error.TeamErrorCode;
 import com.catholic.hangarae.global.apiPayLoad.error.UserErrorCode;
 import com.catholic.hangarae.global.apiPayLoad.exception.BusinessException;
-import com.catholic.hangarae.global.apiPayLoad.response.Response;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,6 +77,7 @@ public class TeamServiceImpl implements TeamService {
         return savedTeam.getId();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public TeamResponse.DetailRes getTeamDetail(Long teamId) {
         Team team = teamRepository.findById(teamId)
@@ -100,6 +100,7 @@ public class TeamServiceImpl implements TeamService {
                 .startAt(team.getStartAt())
                 .endAt(team.getEndAt())
                 .maxMember(team.getMaxMember())
+                .remainingMember(team.getRemainingMember())
                 .userName(user.getName())
                 .studentStatus(user.getStatus())
                 .department(department)
@@ -112,5 +113,40 @@ public class TeamServiceImpl implements TeamService {
         return detailRes;
     }
 
+    private TeamResponse.ListRes toListRes(Team team) {
+        User user = team.getUser();
 
+        DepartmentType department = userDepartmentRepository
+                .findByUserIdAndType(user.getId(), UserDepartmentType.PRIMARY)
+                .map(ud -> ud.getDepartment().getName())
+                .orElse(null);
+
+        return TeamResponse.ListRes.builder()
+                .teamId(team.getId())
+                .title(team.getTitle())
+                .startAt(team.getStartAt())
+                .endAt(team.getEndAt())
+                .maxMember(team.getMaxMember())
+                .remainingMember(team.getRemainingMember())
+                .userName(user.getName())
+                .studentStatus(user.getStatus())
+                .department(department)
+                .category(team.getCategory())
+                .teamStatus(team.getStatus())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<TeamResponse.ListRes> getTeamList(){
+        List<Team> teams = teamRepository.findAll();
+        return teams.stream().map(this::toListRes).toList();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<TeamResponse.ListRes> searchTeams(String keyword) {
+        List<Team> teams = teamRepository.findByTitleContainingOrDetailContaining(keyword, keyword);
+        return teams.stream().map(this::toListRes).toList();
+    }
 }

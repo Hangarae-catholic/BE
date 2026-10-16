@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/team")
 @AllArgsConstructor
@@ -36,4 +38,19 @@ public class TeamController {
         return ResponseEntity.status(HttpStatus.OK).body(Response.ok(response));
     }
 
+    @GetMapping
+    @Operation(summary = "팀 매칭 목록 조회", description = "팀 매칭 게시글 목록을 조회합니다.")
+    public ResponseEntity<Response<List<TeamResponse.ListRes>>> getTeamList() {
+        List<TeamResponse.ListRes> response = teamService.getTeamList();
+        return ResponseEntity.status(HttpStatus.OK).body(Response.ok(response));
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "팀 매칭 검색", description = "팀 매칭 게시글을 검색합니다.")
+    public ResponseEntity<Response<List<TeamResponse.ListRes>>> searchTeams(
+            @RequestParam String keyword) {
+        List<TeamResponse.ListRes> response = teamService.searchTeams(keyword);
+        return ResponseEntity.ok(Response.ok(response));
+    }
+    
 }

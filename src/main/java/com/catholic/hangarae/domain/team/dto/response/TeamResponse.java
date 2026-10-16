@@ -38,4 +38,22 @@ public class TeamResponse{
 
         private List<String> imageUrls;
     }
+
+    @Getter
+    @Builder
+    public static class ListRes{
+        private Long teamId;
+        private String title;
+        private LocalDateTime startAt;
+        private LocalDateTime endAt;
+        private Integer maxMember;
+        private Integer remainingMember;
+
+        private String userName;
+        private StudentStatus studentStatus;
+        private DepartmentType department;
+
+        private TeamCategory category;
+        private TeamStatus teamStatus;
+    }
 }
