@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface UserTeamRepository extends JpaRepository<UserTeam, Long> {
 
+    void deleteAllByTeamId(Long teamId);
+
 }

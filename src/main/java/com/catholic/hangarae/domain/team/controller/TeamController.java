@@ -52,5 +52,10 @@ public class TeamController {
         List<TeamResponse.ListRes> response = teamService.searchTeams(keyword);
         return ResponseEntity.ok(Response.ok(response));
     }
-    
+
+    @DeleteMapping("/{teamId}")
+    @Operation(summary = "팀 매칭 게시글 삭제", description = "팀 매칭 게시글을 삭제합니다.")
+    public ResponseEntity<Response<Void>> deleteTeam(@AuthUser Long userId, @PathVariable Long teamId) {
+        return ResponseEntity.ok(Response.ok(teamService.deleteTeam(userId, teamId)));
+    }
 }

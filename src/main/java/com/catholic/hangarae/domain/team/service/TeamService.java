@@ -13,5 +13,6 @@ public interface TeamService {
     TeamResponse.DetailRes getTeamDetail(Long teamId);
     List<TeamResponse.ListRes> getTeamList();
     List<TeamResponse.ListRes> searchTeams(String keyword);
+    Void deleteTeam(Long userId, Long teamId);
 
 }

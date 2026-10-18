@@ -149,4 +149,24 @@ public class TeamServiceImpl implements TeamService {
         List<Team> teams = teamRepository.findByTitleContainingOrDetailContaining(keyword, keyword);
         return teams.stream().map(this::toListRes).toList();
     }
+
+    @Transactional
+    @Override
+    public Void deleteTeam(Long userId, Long teamId) {
+        Team team =  teamRepository.findById(teamId)
+                .orElseThrow(() -> new BusinessException(TeamErrorCode.TEAM_NOT_FOUND));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+
+        if (!team.getUser().getId().equals(user.getId())) {
+            throw new BusinessException(TeamErrorCode.WRITER_DIFFERENCE);
+        }
+
+        teamImageRepository.deleteAllByTeamId(teamId);
+        userTeamRepository.deleteAllByTeamId(teamId);
+        teamRepository.delete(team);
+        return null;
+    }
+
 }

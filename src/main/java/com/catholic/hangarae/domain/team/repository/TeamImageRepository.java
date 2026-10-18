@@ -11,5 +11,5 @@ import java.util.List;
 public interface TeamImageRepository extends JpaRepository<TeamImage, Long> {
 
     List<TeamImage> findAllByTeamId(Long teamId);
-
+    void deleteAllByTeamId(Long teamId);
 }
