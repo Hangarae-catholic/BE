@@ -1,6 +1,7 @@
 package com.catholic.hangarae.domain.notice.entity;
 
 import com.catholic.hangarae.domain.department.entity.Department;
+import com.catholic.hangarae.domain.notice.vo.Location;
 import com.catholic.hangarae.domain.notice.vo.NoticeType;
 import com.catholic.hangarae.domain.notice.vo.NoticeCategory;
 import com.catholic.hangarae.global.apiPayLoad.common.BaseEntity;
@@ -23,6 +24,9 @@ public class Notice extends BaseEntity {
 
     private String name;
 
+    // 행사 한줄 소개
+    private String summary;
+
     private LocalDateTime startAt;
 
     private LocalDateTime endAt;
@@ -30,7 +34,8 @@ public class Notice extends BaseEntity {
     @Column(columnDefinition = "text")
     private String information;
 
-    private String location;
+    @Enumerated(EnumType.STRING)
+    private Location location;
 
     private String responsible;
 
@@ -52,8 +57,9 @@ public class Notice extends BaseEntity {
     private Department department;
 
     @Builder
-    public Notice(String name, LocalDateTime startAt, LocalDateTime endAt, String information, String location, String responsible, String url, NoticeType type, NoticeCategory category, Department department) {
+    public Notice(String name, String summary, LocalDateTime startAt, LocalDateTime endAt, String information, Location location, String responsible, String url, NoticeType type, NoticeCategory category, Department department) {
         this.name = name;
+        this.summary = summary;
         this.startAt = startAt;
         this.endAt = endAt;
         this.information = information;
