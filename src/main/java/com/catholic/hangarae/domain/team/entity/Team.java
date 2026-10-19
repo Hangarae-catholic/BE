@@ -80,4 +80,8 @@ public class Team extends BaseEntity {
         this.contactUrl = contactUrl;
         this.status = (remainingMember == 0 ? TeamStatus.CLOSED : TeamStatus.RECRUITING);
     }
+
+    public void close() {
+        this.status = TeamStatus.CLOSED;
+    }
 }

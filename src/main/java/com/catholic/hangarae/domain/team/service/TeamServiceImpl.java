@@ -12,6 +12,7 @@ import com.catholic.hangarae.domain.team.entity.UserTeam;
 import com.catholic.hangarae.domain.team.repository.TeamImageRepository;
 import com.catholic.hangarae.domain.team.repository.TeamRepository;
 import com.catholic.hangarae.domain.team.repository.UserTeamRepository;
+import com.catholic.hangarae.domain.team.vo.TeamStatus;
 import com.catholic.hangarae.domain.team.vo.UserTeamRole;
 import com.catholic.hangarae.domain.user.entity.User;
 import com.catholic.hangarae.domain.user.entity.UserDepartment;
@@ -24,7 +25,9 @@ import com.catholic.hangarae.global.apiPayLoad.exception.BusinessException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Scheduled;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -213,4 +216,12 @@ public class TeamServiceImpl implements TeamService {
         return null;
     }
 
+    //마감일 지난 팀 상태 변경
+    @Scheduled(fixedRate = 300000) //5분마다 확인
+    @Transactional
+    @Override
+    public void closeExpiredTeams() {
+        List<Team> expiredTeams = teamRepository.findByEndAtBeforeAndStatus(LocalDateTime.now(), TeamStatus.RECRUITING);
+        expiredTeams.forEach(team -> team.close());
+    }
 }
