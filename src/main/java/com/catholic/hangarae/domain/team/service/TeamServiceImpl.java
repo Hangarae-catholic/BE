@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -166,6 +165,51 @@ public class TeamServiceImpl implements TeamService {
         teamImageRepository.deleteAllByTeamId(teamId);
         userTeamRepository.deleteAllByTeamId(teamId);
         teamRepository.delete(team);
+        return null;
+    }
+
+    @Transactional
+    @Override
+    public Void updateTeam(Long userId, Long teamId, TeamRequest.UpdateReq req) {
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new BusinessException(TeamErrorCode.TEAM_NOT_FOUND));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+
+        if (!team.getUser().getId().equals(user.getId())) {
+            throw new BusinessException(TeamErrorCode.WRITER_DIFFERENCE);
+        }
+
+        if (req.getRemainingMember() > team.getMaxMember()) {
+            throw new BusinessException(TeamErrorCode.INVALID_REMAINING_MEMBER);
+        }
+
+        team.update(
+                req.getTitle(),
+                req.getStartAt(),
+                req.getEndAt(),
+                req.getRemainingMember(),
+                req.getCategory(),
+                req.getDetail(),
+                req.getContactUrl()
+        );
+
+        // 이미지 수정
+        teamImageRepository.deleteAllByTeamId(teamId);
+        if (req.getImageUrls() != null) {
+            req.getImageUrls().forEach(imageUrl -> {
+                Image image = imageRepository.save(Image.builder()
+                        .url(imageUrl).build());
+                TeamImage teamImage = TeamImage.builder()
+                        .team(team)
+                        .image(image)
+                        .build();
+                teamImageRepository.save(teamImage);
+            });
+        }
+
         return null;
     }
 

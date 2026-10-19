@@ -14,5 +14,6 @@ public interface TeamService {
     List<TeamResponse.ListRes> getTeamList();
     List<TeamResponse.ListRes> searchTeams(String keyword);
     Void deleteTeam(Long userId, Long teamId);
+    Void updateTeam(Long userId, Long teamId, TeamRequest.UpdateReq req);
 
 }

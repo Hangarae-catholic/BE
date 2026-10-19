@@ -58,4 +58,11 @@ public class TeamController {
     public ResponseEntity<Response<Void>> deleteTeam(@AuthUser Long userId, @PathVariable Long teamId) {
         return ResponseEntity.ok(Response.ok(teamService.deleteTeam(userId, teamId)));
     }
+
+    @PutMapping("/{teamId}")
+    @Operation(summary = "팀 매칭 게시글 수정", description = "팀 매칭 게시글을 수정합니다.")
+    public ResponseEntity<Response<Void>> updateTeam(@AuthUser Long userId, @PathVariable Long teamId,
+                                                     @Valid @RequestBody TeamRequest.UpdateReq req) {
+        return ResponseEntity.ok(Response.ok(teamService.updateTeam(userId, teamId, req)));
+    }
 }
