@@ -165,9 +165,12 @@ public class TeamServiceImpl implements TeamService {
             throw new BusinessException(TeamErrorCode.WRITER_DIFFERENCE);
         }
 
-        teamImageRepository.deleteAllByTeamId(teamId);
+        List<TeamImage> teamImages = teamImageRepository.findAllByTeamId(teamId);
+        teamImageRepository.deleteAll(teamImages);
+        teamImages.forEach(teamImage -> imageRepository.delete(teamImage.getImage()));
         userTeamRepository.deleteAllByTeamId(teamId);
         teamRepository.delete(team);
+
         return null;
     }
 
