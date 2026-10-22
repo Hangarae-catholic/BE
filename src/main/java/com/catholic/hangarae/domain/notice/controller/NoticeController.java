@@ -1,19 +1,18 @@
 package com.catholic.hangarae.domain.notice.controller;
 
+import com.catholic.hangarae.domain.notice.dto.request.NoticeCreateReq;
 import com.catholic.hangarae.domain.notice.dto.response.NoticeDetailRes;
 import com.catholic.hangarae.domain.notice.dto.response.NoticeListRes;
 import com.catholic.hangarae.domain.notice.service.NoticeService;
 import com.catholic.hangarae.global.apiPayLoad.response.Response;
 import com.catholic.hangarae.global.apiPayLoad.result.NoticeResultCode;
+import com.catholic.hangarae.global.security.annotation.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,4 +37,17 @@ public class NoticeController {
     public Response<NoticeDetailRes> getNotice(@PathVariable Long noticeId) {
         return Response.of(NoticeResultCode.NOTICE_DETAIL_OK, noticeService.getNotice(noticeId));
     }
+
+    @PostMapping
+    @Operation(summary = "행사 등록", description = "학생이 사설 행사 등록")
+    public Response<Long> createNotice(@AuthUser Long userId, @Valid @RequestBody NoticeCreateReq req) {
+        return Response.of(NoticeResultCode.NOTICE_CREATE_OK, noticeService.createNotice(userId, req));
+    }
+
+    @DeleteMapping("/{noticeId}")
+    @Operation(summary = "행사 삭제", description = "사설 행사 삭제")
+    public Response<Void> deleteNotice(@AuthUser Long userId, @PathVariable Long noticeId) {
+        return Response.of(NoticeResultCode.NOTICE_DELETE_OK, noticeService.deleteNotice(userId, noticeId));
+    }
+
 }
