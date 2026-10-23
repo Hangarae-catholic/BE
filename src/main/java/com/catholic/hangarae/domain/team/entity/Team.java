@@ -69,4 +69,19 @@ public class Team extends BaseEntity {
         this.status = TeamStatus.RECRUITING;
         this.user = user;
     }
+
+    public void update(String title, LocalDateTime startAt, LocalDateTime endAt, Integer remainingMember, TeamCategory category, String detail, String contactUrl) {
+        this.title = title;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.remainingMember = remainingMember;
+        this.category = category;
+        this.detail = detail;
+        this.contactUrl = contactUrl;
+        this.status = (remainingMember == 0 ? TeamStatus.CLOSED : TeamStatus.RECRUITING);
+    }
+
+    public void close() {
+        this.status = TeamStatus.CLOSED;
+    }
 }
