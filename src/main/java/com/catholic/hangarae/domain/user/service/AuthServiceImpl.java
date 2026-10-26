@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(noRollbackFor = BusinessException.class)
     public TokenRes login(AuthRequest.LoginReq request) {
-        User user=userRepository.findByLoginIdForUpdate(request.getLoginId())
+        User user=userRepository.findUserByLoginId(request.getLoginId())
                 .orElseThrow(()-> new BusinessException(AuthErrorCode.PASSWORD_UNMATCH_ERROR));
 
         if (user.isLoginRestricted()) {
@@ -91,7 +91,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void logout(Long userId) {
-        User user=userRepository.findByIdForUpdate(userId)
+        User user=userRepository.findById(userId)
                 .orElseThrow(()-> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
         user.updateRefreshToken(null);
@@ -101,7 +101,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void withdraw(Long userId) {
-        User user=userRepository.findByIdForUpdate(userId)
+        User user=userRepository.findById(userId)
                 .orElseThrow(()-> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
         // 팀 게시글은 작성자 정보만 비우고 유지
