@@ -66,6 +66,12 @@ public class User extends BaseEntity {
         this.refreshToken = refreshToken;
     }
 
+    public void updateProfile(String nickname, UserCharacter character, StudentStatus status) {
+        this.nickname = nickname;
+        this.character = character;
+        this.status = status;
+    }
+
     public static User createLocalUser(String loginId, String name, String nickname, String email, String password) {
         return User.builder()
                 .loginId(loginId)
