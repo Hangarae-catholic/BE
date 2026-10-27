@@ -13,6 +13,10 @@ public enum NoticeResultCode implements ResultCode {
     NOTICE_CREATE_OK(HttpStatus.OK, "NOTICE003", "사설 행사 등록 성공"),
     NOTICE_DELETE_OK(HttpStatus.OK, "NOTICE004", "사설 행사 삭제 성공"),
 
+    NOTICE_REACT_OK(HttpStatus.OK, "NOTICE005", "사설 행사 추천/비추천 성공"),
+    NOTICE_REACT_GET_OK(HttpStatus.OK, "NOTICE006", "사설 행사 추천/비추천 조회 성공"),
+
+
     ;
 
     private final HttpStatus httpStatus;

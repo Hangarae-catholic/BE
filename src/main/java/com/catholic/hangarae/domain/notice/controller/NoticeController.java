@@ -1,8 +1,10 @@
 package com.catholic.hangarae.domain.notice.controller;
 
 import com.catholic.hangarae.domain.notice.dto.request.NoticeCreateReq;
+import com.catholic.hangarae.domain.notice.dto.request.NoticeReactionReq;
 import com.catholic.hangarae.domain.notice.dto.response.NoticeDetailRes;
 import com.catholic.hangarae.domain.notice.dto.response.NoticeListRes;
+import com.catholic.hangarae.domain.notice.dto.response.NoticeReactionRes;
 import com.catholic.hangarae.domain.notice.service.NoticeService;
 import com.catholic.hangarae.global.apiPayLoad.response.Response;
 import com.catholic.hangarae.global.apiPayLoad.result.NoticeResultCode;
@@ -50,4 +52,15 @@ public class NoticeController {
         return Response.of(NoticeResultCode.NOTICE_DELETE_OK, noticeService.deleteNotice(userId, noticeId));
     }
 
+    @PostMapping("/{noticeId}/reaction")
+    @Operation(summary = "행사 추천/비추천", description = "사설 행사 추천/비추천 기능")
+    public Response<Void> reactToNotice(@AuthUser Long userId, @PathVariable Long noticeId, @Valid @RequestBody NoticeReactionReq req) {
+        return Response.of(NoticeResultCode.NOTICE_REACT_OK, noticeService.reactToNotice(userId, noticeId, req));
+    }
+
+    @GetMapping("{noticeId}/reaction")
+    @Operation(summary = "행사 추천/비추천 조회", description = "사설 행사 추천/비추천 조회")
+    public Response<NoticeReactionRes> getNoticeReaction(@AuthUser Long userId, @PathVariable Long noticeId) {
+        return Response.of(NoticeResultCode.NOTICE_REACT_GET_OK, noticeService.getNoticeReaction(userId, noticeId));
+    }
 }
