@@ -1,5 +1,6 @@
 package com.catholic.hangarae.domain.notice.entity;
 
+import com.catholic.hangarae.domain.user.entity.User;
 import com.catholic.hangarae.domain.department.entity.Department;
 import com.catholic.hangarae.domain.notice.vo.Location;
 import com.catholic.hangarae.domain.notice.vo.NoticeType;
@@ -56,8 +57,13 @@ public class Notice extends BaseEntity {
     @JoinColumn(name = "department_id")
     private Department department;
 
+    // 학생 등록 행사인 경우 필요
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Builder
-    public Notice(String name, String summary, LocalDateTime startAt, LocalDateTime endAt, String information, Location location, String responsible, String url, NoticeType type, NoticeCategory category, Department department) {
+    public Notice(String name, String summary, LocalDateTime startAt, LocalDateTime endAt, String information, Location location, String responsible, String url, NoticeType type, NoticeCategory category, Department department, User user) {
         this.name = name;
         this.summary = summary;
         this.startAt = startAt;
@@ -69,5 +75,7 @@ public class Notice extends BaseEntity {
         this.type = type;
         this.category = category;
         this.department = department;
+        this.user = user;
+        this.approved = false;
     }
 }

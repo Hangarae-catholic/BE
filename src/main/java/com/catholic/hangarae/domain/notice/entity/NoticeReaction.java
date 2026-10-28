@@ -40,4 +40,8 @@ public class NoticeReaction extends BaseEntity {
         this.user = user;
         this.notice = notice;
     }
+
+    public void updateType(NoticeReactionType type) {
+        this.type = type;
+    }
 }
