@@ -1,0 +1,34 @@
+name: hangarae
+
+services:
+  app:
+    image: ${HANGARAE_IMAGE}
+    container_name: hangarae-app
+    restart: unless-stopped
+
+    ports:
+      - "100.66.12.112:8081:8080"
+
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PROD_DB_URL: jdbc:mysql://100.66.133.99:3306/hangarae
+      PROD_DB_USERNAME: hangarae_app
+      PROD_DB_PASSWORD: ${PROD_DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=50.0 -XX:+ExitOnOutOfMemoryError"
+      TZ: Asia/Seoul
+
+    mem_limit: 1g
+
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 90s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
