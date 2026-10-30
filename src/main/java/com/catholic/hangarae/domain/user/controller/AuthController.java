@@ -1,8 +1,10 @@
 package com.catholic.hangarae.domain.user.controller;
 
 import com.catholic.hangarae.domain.user.dto.request.AuthRequest;
+import com.catholic.hangarae.domain.user.dto.response.KakaoLoginRes;
 import com.catholic.hangarae.domain.user.dto.response.TokenRes;
 import com.catholic.hangarae.domain.user.service.AuthService;
+import com.catholic.hangarae.domain.user.vo.KakaoNextStep;
 import com.catholic.hangarae.global.apiPayLoad.response.Response;
 import com.catholic.hangarae.global.apiPayLoad.result.UserResultCode;
 import com.catholic.hangarae.global.security.annotation.AuthUser;
@@ -48,5 +50,24 @@ public class AuthController {
     public Response<String> withdraw (@AuthUser Long userId) {
         authService.withdraw(userId);
         return Response.ok(UserResultCode.USER_WITHDRAW_OK, "회원탈퇴가 완료되었습니다. ");
+    }
+
+    @GetMapping("/kakao")
+    @Operation(summary = "카카오 로그인 시작")
+    public ResponseEntity<Void> kakaoLogin() {
+        return ResponseEntity
+                .status(302)
+                .header("Location", authService.getKakaoLoginUrl())
+                .build();
+    }
+
+    @GetMapping("/kakao/callback")
+    @Operation(summary = "카카오 로그인 콜백")
+    public Response<KakaoLoginRes> kakaoCallback(@RequestParam("code") String code) {
+        KakaoLoginRes result = authService.kakaoLogin(code);
+        if (result.nextStep() == KakaoNextStep.SIGN_UP) {
+            return Response.ok(UserResultCode.USER_KAKAO_SIGNUP_OK, result);
+        }
+        return Response.ok(UserResultCode.USER_KAKAO_LOGIN_OK, result);
     }
 }
