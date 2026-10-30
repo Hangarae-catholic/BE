@@ -12,6 +12,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PROD_DB_URL: jdbc:mysql://100.66.133.99:3306/hangarae
+      SERVER_FORWARD_HEADERS_STRATEGY: framework # 프로젝트마다 경로 다르게 받게 하기 위함
       PROD_DB_USERNAME: hangarae_app
       PROD_DB_PASSWORD: ${PROD_DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
