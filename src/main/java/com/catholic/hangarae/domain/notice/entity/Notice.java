@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "notices")
+// 수집 공지는 원문 url로 중복 확인
+@Table(name = "notices", indexes = @Index(name = "idx_notice_url", columnList = "url"))
 @NoArgsConstructor
 public class Notice extends BaseEntity {
 
@@ -23,6 +24,8 @@ public class Notice extends BaseEntity {
     @Column(name = "id")
     private Long id;
 
+    // 학교 공지 제목 늘리기
+    @Column(length = 500)
     private String name;
 
     // 행사 한줄 소개
@@ -40,7 +43,7 @@ public class Notice extends BaseEntity {
 
     private String responsible;
 
-    @Column(length = 2048)
+    @Column(length = 500)
     private String url;
 
     @Enumerated(EnumType.STRING)
@@ -77,5 +80,9 @@ public class Notice extends BaseEntity {
         this.department = department;
         this.user = user;
         this.approved = false;
+    }
+
+    public void approve() {
+        this.approved = true;
     }
 }
