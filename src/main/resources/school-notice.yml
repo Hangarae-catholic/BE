@@ -1,0 +1,324 @@
+school-notice:
+  enabled: ${SCHOOL_NOTICE_ENABLED:false}
+  interval-ms: ${SCHOOL_NOTICE_INTERVAL_MS:3600000}
+  initial-delay-ms: 10000
+  max-pages: ${SCHOOL_NOTICE_MAX_PAGES:3}
+  request-delay-ms: 500
+  timeout-ms: 15000
+  sources:
+    - key: children-children-community-gallery004
+      name: "아동학과 대학원 공지사항"
+      url: https://children.catholic.ac.kr/children/community/gallery004.do
+      department: "아동학과"
+      department-type: CHILD_STUDIES
+    - key: www-ko-campuslife-notice_outside
+      name: "외부기관공지 게시판목록"
+      url: https://www.catholic.ac.kr/ko/campuslife/notice_outside.do
+    - key: www-ko-campuslife-notice_event
+      name: "행사안내 게시판목록"
+      url: https://www.catholic.ac.kr/ko/campuslife/notice_event.do
+    - key: www-ko-campuslife-notice
+      name: "학교 공지사항 전체"
+      url: https://www.catholic.ac.kr/ko/campuslife/notice.do
+    - key: korean-korean-community-notice
+      name: "국어국문학과 공지사항 게시판목록"
+      url: https://korean.catholic.ac.kr/korean/community/notice.do
+      department: "국어국문학과"
+      department-type: KOREAN_LANGUAGE_LITERATURE
+    - key: philosophy-philosophy-community-notice
+      name: "철학과 일반 공지사항 게시판목록"
+      url: https://philosophy.catholic.ac.kr/philosophy/community/notice.do
+      department: "철학과"
+      department-type: PHILOSOPHY
+    - key: philosophy-philosophy-community-graduation_notice
+      name: "철학과 졸업 공지사항 게시판목록"
+      url: https://philosophy.catholic.ac.kr/philosophy/community/graduation_notice.do
+      department: "철학과"
+      department-type: PHILOSOPHY
+    - key: koreanhistory-koreanhistory-community-notice
+      name: "국사학과 공지사항 게시판목록"
+      url: https://koreanhistory.catholic.ac.kr/koreanhistory/community/notice.do
+      department: "국사학과"
+      department-type: KOREAN_HISTORY
+    - key: english-english-community-notice
+      name: "영어영문학부 공지사항 게시판목록"
+      url: https://english.catholic.ac.kr/english/community/notice.do
+      department: "영어영문학부"
+      department-type: ENGLISH_LANGUAGE_LITERATURE
+    - key: cn-cn-community-notice
+      name: "중국언어문화학과 공지사항 게시판목록"
+      url: https://cn.catholic.ac.kr/cn/community/notice.do
+      department: "중국언어문화학과"
+      department-type: CHINESE_LANGUAGE_CULTURE
+    - key: cn-cn-info-graduatenotice
+      name: "중국언어문화학과 대학원 공지 게시판목록"
+      url: https://cn.catholic.ac.kr/cn/info/graduatenotice.do
+      department: "중국언어문화학과"
+      department-type: CHINESE_LANGUAGE_CULTURE
+    - key: japanese-japanese-major-notice
+      name: "일어일본문화학과 학과공지 게시판목록"
+      url: https://japanese.catholic.ac.kr/japanese/major/notice.do
+      department: "일어일본문화학과"
+      department-type: JAPANESE_LANGUAGE_CULTURE
+    - key: french-french-community-notice
+      name: "프랑스어문화학과 학과공지 게시판목록"
+      url: https://french.catholic.ac.kr/french/community/notice.do
+      department: "프랑스어문화학과"
+      department-type: FRENCH_CULTURE
+    - key: socialwelfare-socialwelfare-community-notice
+      name: "사회복지학과 공지사항 게시판목록"
+      url: https://socialwelfare.catholic.ac.kr/socialwelfare/community/notice.do
+      department: "사회복지학과"
+      department-type: SOCIAL_WELFARE
+    - key: socialwelfare-socialwelfare-info-graduate_notice
+      name: "사회복지학과 대학원 공지사항 게시판목록"
+      url: https://socialwelfare.catholic.ac.kr/socialwelfare/info/graduate_notice.do
+      department: "사회복지학과"
+      department-type: SOCIAL_WELFARE
+    - key: socialwelfare-socialwelfare-info-practice_notice
+      name: "사회복지학과 실습 공지사항 게시판목록"
+      url: https://socialwelfare.catholic.ac.kr/socialwelfare/info/practice_notice.do
+      department: "사회복지학과"
+      department-type: SOCIAL_WELFARE
+    - key: psychology-psychology-community-notice
+      name: "심리학과 학과공지 게시판목록"
+      url: https://psychology.catholic.ac.kr/psychology/community/notice.do
+      department: "심리학과"
+      department-type: PSYCHOLOGY
+    - key: sociology-sociology-community-notice
+      name: "사회학과 공지사항 게시판목록"
+      url: https://sociology.catholic.ac.kr/sociology/community/notice.do
+      department: "사회학과"
+      department-type: SOCIOLOGY
+    - key: children-children-community-notice
+      name: "아동학과 공지사항 게시판목록"
+      url: https://children.catholic.ac.kr/children/community/notice.do
+      department: "아동학과"
+      department-type: CHILD_STUDIES
+    - key: sped-sped-community-notice
+      name: "특수교육과 공지사항 게시판목록"
+      url: https://sped.catholic.ac.kr/sped/community/notice.do
+      department: "특수교육과"
+      department-type: SPECIAL_EDUCATION
+    - key: is-is-community-notice
+      name: "국제학부 학과공지 게시판목록"
+      url: https://is.catholic.ac.kr/is/community/notice.do
+      department: "국제학부"
+      department-type: INTERNATIONAL_STUDIES
+    - key: law-law-community-notice
+      name: "법학과 공지사항 게시판목록"
+      url: https://law.catholic.ac.kr/law/community/notice.do
+      department: "법학과"
+      department-type: LAW
+    - key: economics-economics-community-notice
+      name: "경제학과 공지사항 게시판목록"
+      url: https://economics.catholic.ac.kr/economics/community/notice.do
+      department: "경제학과"
+      department-type: ECONOMICS
+    - key: pa-pa-community-notice
+      name: "행정학과 공지사항 게시판목록"
+      url: https://pa.catholic.ac.kr/pa/community/notice.do
+      department: "행정학과"
+      department-type: PUBLIC_ADMINISTRATION
+    - key: globalbiz-globalbiz-community-notice
+      name: "글로벌경영학과 공지사항 게시판목록"
+      url: https://globalbiz.catholic.ac.kr/globalbiz/community/notice.do
+      department: "글로벌경영학과"
+      department-type: GLOBAL_BUSINESS
+    - key: klc-klc-community-notice
+      name: "한국어문화학과 공지사항 게시판목록"
+      url: https://klc.catholic.ac.kr/klc/community/notice.do
+      department: "한국어문화학과"
+    - key: chemistry-chemistry-community-notice
+      name: "화학과 공지사항 게시판목록"
+      url: https://chemistry.catholic.ac.kr/chemistry/community/notice.do
+      department: "화학과"
+      department-type: CHEMISTRY
+    - key: math-math-community-notice
+      name: "수학과 공지사항 게시판목록"
+      url: https://math.catholic.ac.kr/math/community/notice.do
+      department: "수학과"
+      department-type: MATHEMATICS
+    - key: physics-physics-community-notice
+      name: "물리학과 학과공지 게시판목록"
+      url: https://physics.catholic.ac.kr/physics/community/notice.do
+      department: "물리학과"
+      department-type: PHYSICS
+    - key: design-design-graduate-graduate-notice
+      name: "공간디자인ㆍ소비자학과 공유양식 게시판 게시판목록"
+      url: https://design.catholic.ac.kr/design/graduate/graduate-notice.do
+      department: "공간디자인ㆍ소비자학과"
+      department-type: SPATIAL_DESIGN_CONSUMER_STUDIES
+    - key: design-design-community-notice
+      name: "공간디자인ㆍ소비자학과 공지사항 게시판목록"
+      url: https://design.catholic.ac.kr/design/community/notice.do
+      department: "공간디자인ㆍ소비자학과"
+      department-type: SPATIAL_DESIGN_CONSUMER_STUDIES
+    - key: design-design-community-notice01
+      name: "공간디자인ㆍ소비자학과 외부 게시판 게시판목록"
+      url: https://design.catholic.ac.kr/design/community/notice01.do
+      department: "공간디자인ㆍ소비자학과"
+      department-type: SPATIAL_DESIGN_CONSUMER_STUDIES
+    - key: clothing-clothing-community-notice
+      name: "의류학과 공지사항 게시판목록"
+      url: https://clothing.catholic.ac.kr/clothing/community/notice.do
+      department: "의류학과"
+      department-type: CLOTHING_TEXTILES
+    - key: fn-fn-community-notice
+      name: "식품영양학과 학과공지 게시판목록"
+      url: https://fn.catholic.ac.kr/fn/community/notice.do
+      department: "식품영양학과"
+      department-type: FOOD_NUTRITION
+    - key: fn-fn-community-notice01
+      name: "식품영양학과 대외활동 게시판목록"
+      url: https://fn.catholic.ac.kr/fn/community/notice01.do
+      department: "식품영양학과"
+      department-type: FOOD_NUTRITION
+    - key: music-music-community-notice
+      name: "음악과 공지사항 게시판목록"
+      url: https://music.catholic.ac.kr/music/community/notice.do
+      department: "음악과"
+      department-type: MUSIC
+    - key: voice-voice-community-notice
+      name: "성악과 공지사항 게시판목록"
+      url: https://voice.catholic.ac.kr/voice/community/notice.do
+      department: "성악과"
+      department-type: MUSIC
+    - key: gamc-gamc-community-notice
+      name: "예술미디어융합학과 공지사항 게시판목록"
+      url: https://gamc.catholic.ac.kr/gamc/community/notice.do
+      department: "예술미디어융합학과"
+      department-type: ART_MEDIA_CONVERGENCE
+    - key: business-business-community-notice
+      name: "경영학과 공지사항 게시판목록"
+      url: https://business.catholic.ac.kr/business/community/notice.do
+      department: "경영학과"
+      department-type: BUSINESS_ADMINISTRATION
+    - key: accounting-accounting-community-notice
+      name: "회계학과 공지사항 게시판목록"
+      url: https://accounting.catholic.ac.kr/accounting/community/notice.do
+      department: "회계학과"
+      department-type: ACCOUNTING
+    - key: gbs-gbs-community-notice
+      name: "경영대학 글로벌경영학부 공지사항 게시판목록"
+      url: https://gbs.catholic.ac.kr/gbs/community/notice.do
+      department: "경영대학 글로벌경영학부"
+      department-type: INTERNATIONAL_BUSINESS
+    - key: pharmacy-pharmacy-community-notice
+      name: "약학대학 학과공지 게시판목록"
+      url: https://pharmacy.catholic.ac.kr/pharmacy/community/notice.do
+      department: "약학대학"
+      department-type: PHARMACY
+    - key: pharmacy-pharmacy-institute-notice
+      name: "약학대학 공지사항 게시판목록"
+      url: https://pharmacy.catholic.ac.kr/pharmacy/institute/notice.do
+      department: "약학대학"
+      department-type: PHARMACY
+    - key: biotech-biotech-community-notice
+      name: "생명공학과 공지사항 게시판목록"
+      url: https://biotech.catholic.ac.kr/biotech/community/notice.do
+      department: "생명공학과"
+      department-type: BIOTECHNOLOGY
+    - key: bmce-bmce-community-notice
+      name: "바이오메디컬화학공학과 공지사항 게시판목록"
+      url: https://bmce.catholic.ac.kr/bmce/community/notice.do
+      department: "바이오메디컬화학공학과"
+      department-type: BIOMEDICAL_CHEMICAL_ENGINEERING
+    - key: bmce-bmce-community-notice1
+      name: "바이오메디컬화학공학과 대외활동 게시판목록"
+      url: https://bmce.catholic.ac.kr/bmce/community/notice1.do
+      department: "바이오메디컬화학공학과"
+      department-type: BIOMEDICAL_CHEMICAL_ENGINEERING
+    - key: ble-BLE-community-notice
+      name: "바이오로직스공학부 학과공지 게시판목록"
+      url: https://ble.catholic.ac.kr/BLE/community/notice.do
+      department: "바이오로직스공학부"
+      department-type: BIOLOGICS_ENGINEERING
+    - key: aibme-aibme-community-notice
+      name: "AI 의공학과 공지사항 게시판목록"
+      url: https://aibme.catholic.ac.kr/aibme/community/notice.do
+      department: "AI 의공학과"
+      department-type: AI_BIOMEDICAL_ENGINEERING
+    - key: mbs-mbs-community-notice
+      name: "의생명과학과 학과공지 게시판목록"
+      url: https://mbs.catholic.ac.kr/mbs/community/notice.do
+      department: "의생명과학과"
+      department-type: BIOMEDICAL_SCIENCE
+    - key: bmsw-bmsw-community-notice
+      name: "바이오메디컬소프트웨어학과 공지사항 게시판목록"
+      url: https://bmsw.catholic.ac.kr/bmsw/community/notice.do
+      department: "바이오메디컬소프트웨어학과"
+      department-type: BIOMEDICAL_SOFTWARE
+    - key: csie-csie-community-notice
+      name: "컴퓨터정보공학부 학과공지 게시판목록"
+      url: https://csie.catholic.ac.kr/csie/community/notice.do
+      department: "컴퓨터정보공학부"
+      department-type: COMPUTER_INFORMATION_ENGINEERING
+    - key: mtc-mtc-community-notice
+      name: "미디어기술콘텐츠학과 공지사항 게시판목록"
+      url: https://mtc.catholic.ac.kr/mtc/community/notice.do
+      department: "미디어기술콘텐츠학과"
+      department-type: MEDIA_TECHNOLOGY_CONTENTS
+    - key: mtc-mtc-community-notice1
+      name: "미디어기술콘텐츠학과 외부 활동 게시판목록"
+      url: https://mtc.catholic.ac.kr/mtc/community/notice1.do
+      department: "미디어기술콘텐츠학과"
+      department-type: MEDIA_TECHNOLOGY_CONTENTS
+    - key: ice-ice-community-notice
+      name: "정보통신전자공학부 공지사항 게시판목록"
+      url: https://ice.catholic.ac.kr/ice/community/notice.do
+      department: "정보통신전자공학부"
+      department-type: INFORMATION_COMMUNICATION_ELECTRONICS_ENGINEERING
+    - key: ice-ice-community-notice01
+      name: "정보통신전자공학부 외부공지 게시판목록"
+      url: https://ice.catholic.ac.kr/ice/community/notice01.do
+      department: "정보통신전자공학부"
+      department-type: INFORMATION_COMMUNICATION_ELECTRONICS_ENGINEERING
+    - key: ai-ai-community-notice
+      name: "인공지능학과 공지사항 게시판목록"
+      url: https://ai.catholic.ac.kr/ai/community/notice.do
+      department: "인공지능학과"
+      department-type: ARTIFICIAL_INTELLIGENCE
+    - key: ai-ai-community-graduatenotice
+      name: "인공지능학과 대학원 소식 게시판목록"
+      url: https://ai.catholic.ac.kr/ai/community/graduatenotice.do
+      department: "인공지능학과"
+      department-type: ARTIFICIAL_INTELLIGENCE
+    - key: datascience-datascience-community-notice
+      name: "데이터사이언스학과 학과공지 게시판목록"
+      url: https://datascience.catholic.ac.kr/datascience/community/notice.do
+      department: "데이터사이언스학과"
+      department-type: DATA_SCIENCE
+    - key: liberal-liberal-community-notice
+      name: "자유전공학부 공지사항 게시판목록"
+      url: https://liberal.catholic.ac.kr/liberal/community/notice.do
+      department: "자유전공학부"
+      department-type: LIBERAL_STUDIES
+    - key: major-convergence-major_convergence-notice-notice
+      name: "융합전공학부 공지사항 게시판목록"
+      url: https://major-convergence.catholic.ac.kr/major_convergence/notice/notice.do
+      department: "융합전공학부"
+      department-type: INTERDISCIPLINARY_STUDIES
+    - key: envi-envi-community-notice
+      name: "에너지환경공학과 공지사항 게시판목록"
+      url: https://envi.catholic.ac.kr/envi/community/notice.do
+      department: "에너지환경공학과"
+      department-type: ENERGY_ENVIRONMENTAL_ENGINEERING
+    - key: teaching-teaching-community-notice
+      name: "교직과 공지사항 게시판목록"
+      url: https://teaching.catholic.ac.kr/teaching/community/notice.do
+      department: "교직과"
+      department-type: TEACHER_TRAINING
+    - key: catholic-college-catholic_college-notification-notice
+      name: "학부대학 공지사항 게시판목록"
+      url: https://catholic-college.catholic.ac.kr/catholic_college/notification/notice.do
+      department: "학부대학"
+
+jev:
+  enabled: ${JEV_ENABLED:false}
+  api-key: ${TYPESAFE_API_KEY:}
+  base-url: https://api.typesafe.ai
+  model: ${JEV_MODEL:jev-latest}
+  timeout-ms: 30000
+  interest-threshold: 0.7
+  confidence-threshold: 0.8
