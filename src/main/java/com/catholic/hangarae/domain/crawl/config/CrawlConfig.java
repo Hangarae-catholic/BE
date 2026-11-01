@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @Configuration
-@EnableConfigurationProperties({SchoolNoticeProperties.class, JevProperties.class})
+@EnableConfigurationProperties({SchoolNoticeProperties.class, JevProperties.class, GeminiProperties.class})
 public class CrawlConfig {
 
     // 수집 중에도 기존 팀 마감 스케줄러가 실행되도록 분리

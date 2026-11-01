@@ -320,5 +320,11 @@ jev:
   base-url: https://api.typesafe.ai
   model: ${JEV_MODEL:jev-latest}
   timeout-ms: 30000
-  interest-threshold: 0.7
-  confidence-threshold: 0.8
+
+# 새 공지의 요약, 상세 내용, 일정, 장소, 주최기관 생성
+gemini:
+  enabled: ${GEMINI_ENABLED:false}
+  api-key: ${GEMINI_API_KEY:}
+  base-url: https://generativelanguage.googleapis.com
+  model: ${GEMINI_MODEL:gemini-3.5-flash-lite}
+  timeout-ms: 30000

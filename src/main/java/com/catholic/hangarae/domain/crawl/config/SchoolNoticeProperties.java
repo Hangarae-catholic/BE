@@ -27,9 +27,6 @@ public class SchoolNoticeProperties {
     @Min(1000)
     private int timeoutMs = 15000;
 
-    @NotBlank
-    private String academicCalendarUrl = "https://www.catholic.ac.kr/ko/support/calendar2024_list.do";
-
     @Valid
     private List<Source> sources = new ArrayList<>();
 
