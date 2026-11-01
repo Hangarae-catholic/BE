@@ -1,7 +1,9 @@
 school-notice:
   enabled: ${SCHOOL_NOTICE_ENABLED:false}
-  interval-ms: ${SCHOOL_NOTICE_INTERVAL_MS:3600000}
-  initial-delay-ms: 10000
+  # 매일 0시, 12시 수집
+  cron: ${SCHOOL_NOTICE_CRON:0 0 0,12 * * *}
+  # 과거 공지 적재처럼 바로 수집이 필요할 때만 true
+  run-on-startup: ${SCHOOL_NOTICE_RUN_ON_STARTUP:false}
   max-pages: ${SCHOOL_NOTICE_MAX_PAGES:3}
   request-delay-ms: 500
   timeout-ms: 15000

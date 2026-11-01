@@ -20,6 +20,9 @@ import java.util.List;
 @ConfigurationProperties(prefix = "school-notice")
 public class SchoolNoticeProperties {
 
+    // 시작 직후 한 번 수집, 과거 공지 적재용
+    private boolean runOnStartup;
+
     // 0이면 마지막 페이지까지 수집
     @Min(0)
     private int maxPages = 3;
