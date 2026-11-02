@@ -8,11 +8,6 @@ school-notice:
   request-delay-ms: 500
   timeout-ms: 15000
   sources:
-    - key: children-children-community-gallery004
-      name: "아동학과 대학원 공지사항"
-      url: https://children.catholic.ac.kr/children/community/gallery004.do
-      department: "아동학과"
-      department-type: CHILD_STUDIES
     - key: www-ko-campuslife-notice_outside
       name: "외부기관공지 게시판목록"
       url: https://www.catholic.ac.kr/ko/campuslife/notice_outside.do
@@ -52,11 +47,6 @@ school-notice:
       url: https://cn.catholic.ac.kr/cn/community/notice.do
       department: "중국언어문화학과"
       department-type: CHINESE_LANGUAGE_CULTURE
-    - key: cn-cn-info-graduatenotice
-      name: "중국언어문화학과 대학원 공지 게시판목록"
-      url: https://cn.catholic.ac.kr/cn/info/graduatenotice.do
-      department: "중국언어문화학과"
-      department-type: CHINESE_LANGUAGE_CULTURE
     - key: japanese-japanese-major-notice
       name: "일어일본문화학과 학과공지 게시판목록"
       url: https://japanese.catholic.ac.kr/japanese/major/notice.do
@@ -70,11 +60,6 @@ school-notice:
     - key: socialwelfare-socialwelfare-community-notice
       name: "사회복지학과 공지사항 게시판목록"
       url: https://socialwelfare.catholic.ac.kr/socialwelfare/community/notice.do
-      department: "사회복지학과"
-      department-type: SOCIAL_WELFARE
-    - key: socialwelfare-socialwelfare-info-graduate_notice
-      name: "사회복지학과 대학원 공지사항 게시판목록"
-      url: https://socialwelfare.catholic.ac.kr/socialwelfare/info/graduate_notice.do
       department: "사회복지학과"
       department-type: SOCIAL_WELFARE
     - key: socialwelfare-socialwelfare-info-practice_notice
@@ -146,11 +131,6 @@ school-notice:
       url: https://physics.catholic.ac.kr/physics/community/notice.do
       department: "물리학과"
       department-type: PHYSICS
-    - key: design-design-graduate-graduate-notice
-      name: "공간디자인ㆍ소비자학과 공유양식 게시판 게시판목록"
-      url: https://design.catholic.ac.kr/design/graduate/graduate-notice.do
-      department: "공간디자인ㆍ소비자학과"
-      department-type: SPATIAL_DESIGN_CONSUMER_STUDIES
     - key: design-design-community-notice
       name: "공간디자인ㆍ소비자학과 공지사항 게시판목록"
       url: https://design.catholic.ac.kr/design/community/notice.do
@@ -279,11 +259,6 @@ school-notice:
     - key: ai-ai-community-notice
       name: "인공지능학과 공지사항 게시판목록"
       url: https://ai.catholic.ac.kr/ai/community/notice.do
-      department: "인공지능학과"
-      department-type: ARTIFICIAL_INTELLIGENCE
-    - key: ai-ai-community-graduatenotice
-      name: "인공지능학과 대학원 소식 게시판목록"
-      url: https://ai.catholic.ac.kr/ai/community/graduatenotice.do
       department: "인공지능학과"
       department-type: ARTIFICIAL_INTELLIGENCE
     - key: datascience-datascience-community-notice
