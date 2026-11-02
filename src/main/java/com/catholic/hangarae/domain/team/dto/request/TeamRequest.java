@@ -1,6 +1,8 @@
 package com.catholic.hangarae.domain.team.dto.request;
 
 import com.catholic.hangarae.domain.team.vo.TeamCategory;
+import com.catholic.hangarae.domain.team.vo.TeamContactType;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,8 +37,9 @@ public class TeamRequest {
         @NotBlank
         private String detail;
 
-        @NotBlank
-        private String contactUrl;
+        @NotEmpty(message = "연락수단은 최소 1개 이상 등록해야 합니다.")
+        @Size(max = 3)
+        private List<@Valid ContactReq> contacts;
 
         @Size(max = 3)
         private List<@NotBlank String> imageUrls;
@@ -81,8 +84,9 @@ public class TeamRequest {
         @NotBlank
         private String detail;
 
-        @NotBlank
-        private String contactUrl;
+        @NotEmpty(message = "연락수단은 최소 1개 이상 등록해야 합니다.")
+        @Size(max = 3)
+        private List<@Valid ContactReq> contacts;
 
         @Size(max = 3)
         private List<@NotBlank String> imageUrls;
@@ -93,4 +97,15 @@ public class TeamRequest {
             return !startAt.isAfter(endAt);
         }
     }
+
+    @Getter
+    public static class ContactReq {
+
+        @NotNull
+        private TeamContactType type;
+
+        @NotBlank
+        private String url;
+    }
+
 }

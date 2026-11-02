@@ -2,6 +2,7 @@ package com.catholic.hangarae.domain.team.dto.response;
 
 import com.catholic.hangarae.domain.department.vo.DepartmentType;
 import com.catholic.hangarae.domain.team.vo.TeamCategory;
+import com.catholic.hangarae.domain.team.vo.TeamContactType;
 import com.catholic.hangarae.domain.team.vo.TeamStatus;
 import com.catholic.hangarae.domain.user.vo.StudentStatus;
 import jakarta.validation.constraints.NotBlank;
@@ -34,8 +35,8 @@ public class TeamResponse{
         private TeamCategory category;
         private TeamStatus teamStatus;
         private String detail;
-        private String contactUrl;
 
+        private List<ContactRes> contacts;
         private List<String> imageUrls;
     }
 
@@ -55,5 +56,12 @@ public class TeamResponse{
 
         private TeamCategory category;
         private TeamStatus teamStatus;
+    }
+
+    @Getter
+    @Builder
+    public static class ContactRes {
+        private TeamContactType type;
+        private String url;
     }
 }

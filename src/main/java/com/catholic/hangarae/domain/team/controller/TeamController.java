@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/team")
+@RequestMapping("/api/teams")
 @AllArgsConstructor
 @Tag(name="Team", description = "팀 매칭 API")
 public class TeamController {
@@ -26,7 +26,7 @@ public class TeamController {
     private final TeamService teamService;
 
     @PostMapping
-    @Operation(summary = "팀 매칭 게시글 생성", description = "팀 매칭 게시글을 생성합니다.")
+    @Operation(summary = "팀 매칭 게시글 생성")
     public Response<Long> createTeam(@AuthUser Long userId, @Valid @RequestBody TeamRequest.CreateReq req) {
         Long teamId = teamService.createTeam(userId, req);
         return Response.of(TeamResultCode.TEAM_CREATE_OK, teamId);}
@@ -46,7 +46,7 @@ public class TeamController {
     }
 
     @GetMapping("/search")
-    @Operation(summary = "팀 매칭 검색", description = "팀 매칭 게시글을 검색합니다.")
+    @Operation(summary = "팀 매칭 검색")
     public Response<List<TeamResponse.ListRes>> searchTeams(
             @RequestParam String keyword) {
         List<TeamResponse.ListRes> response = teamService.searchTeams(keyword);
@@ -54,15 +54,28 @@ public class TeamController {
     }
 
     @DeleteMapping("/{teamId}")
-    @Operation(summary = "팀 매칭 게시글 삭제", description = "팀 매칭 게시글을 삭제합니다.")
+    @Operation(summary = "팀 매칭 게시글 삭제")
     public Response<Void> deleteTeam(@AuthUser Long userId, @PathVariable Long teamId) {
         return Response.of(TeamResultCode.TEAM_DELETE_OK, teamService.deleteTeam(userId, teamId));
     }
 
     @PutMapping("/{teamId}")
-    @Operation(summary = "팀 매칭 게시글 수정", description = "팀 매칭 게시글을 수정합니다.")
-    public Response<Void> updateTeam(@AuthUser Long userId, @PathVariable Long teamId,
+    @Operation(summary = "팀 매칭 게시글 수정")
+    public Response<Long> updateTeam(@AuthUser Long userId, @PathVariable Long teamId,
                                                      @Valid @RequestBody TeamRequest.UpdateReq req) {
         return Response.of(TeamResultCode.TEAM_UPDATE_OK, teamService.updateTeam(userId, teamId, req));
+    }
+
+    @GetMapping("/my")
+    @Operation(summary = "사용자가 작성한 팀 매칭 목록 조회")
+    public Response<List<TeamResponse.ListRes>> getMyTeams(@AuthUser Long userId) {
+        List<TeamResponse.ListRes> response = teamService.getMyTeams(userId);
+        return Response.of(TeamResultCode.TEAM_MY_LIST_OK, response);
+    }
+
+    @PatchMapping("/{teamId}/close")
+    @Operation(summary = "팀 매칭 수동 마감")
+    public Response<Long> closeTeam(@AuthUser Long userId, @PathVariable Long teamId) {
+        return Response.of(TeamResultCode.TEAM_CLOSE_SUCCESS, teamService.closeTeam(userId, teamId));
     }
 }
