@@ -7,8 +7,10 @@ import com.catholic.hangarae.domain.image.repository.ImageRepository;
 import com.catholic.hangarae.domain.team.dto.request.TeamRequest;
 import com.catholic.hangarae.domain.team.dto.response.TeamResponse;
 import com.catholic.hangarae.domain.team.entity.Team;
+import com.catholic.hangarae.domain.team.entity.TeamContact;
 import com.catholic.hangarae.domain.team.entity.TeamImage;
 import com.catholic.hangarae.domain.team.entity.UserTeam;
+import com.catholic.hangarae.domain.team.repository.TeamContactRepository;
 import com.catholic.hangarae.domain.team.repository.TeamImageRepository;
 import com.catholic.hangarae.domain.team.repository.TeamRepository;
 import com.catholic.hangarae.domain.team.repository.UserTeamRepository;
@@ -41,10 +43,12 @@ public class TeamServiceImpl implements TeamService {
     private final TeamImageRepository teamImageRepository;
     private final UserDepartmentRepository userDepartmentRepository;
     private final UserTeamRepository userTeamRepository;
+    private final TeamContactRepository teamContactRepository;
 
     @Transactional
     @Override
     public Long createTeam(Long userId, TeamRequest.CreateReq req) {
+
         User user=userRepository.findById(userId)
                 .orElseThrow(()-> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
@@ -55,7 +59,6 @@ public class TeamServiceImpl implements TeamService {
                 .maxMember(req.getMaxMember())
                 .category(req.getCategory())
                 .detail(req.getDetail())
-                .contactUrl(req.getContactUrl())
                 .user(user)
                 .build();
         Team savedTeam = teamRepository.save(team);
@@ -66,6 +69,16 @@ public class TeamServiceImpl implements TeamService {
                 .role(UserTeamRole.LEADER)
                 .build();
         userTeamRepository.save(userTeam);
+
+        // 연락수단
+        List<TeamContact> contacts = req.getContacts().stream()
+                .map(contact -> TeamContact.builder()
+                        .team(savedTeam)
+                        .type(contact.getType())
+                        .url(contact.getUrl())
+                        .build())
+                .toList();
+        teamContactRepository.saveAll(contacts);
 
         // 이미지
         if (req.getImageUrls() != null) {
@@ -82,6 +95,7 @@ public class TeamServiceImpl implements TeamService {
     @Transactional(readOnly = true)
     @Override
     public TeamResponse.DetailRes getTeamDetail(Long teamId) {
+
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new BusinessException(TeamErrorCode.TEAM_NOT_FOUND));
         User user = team.getUser();
@@ -91,6 +105,16 @@ public class TeamServiceImpl implements TeamService {
         DepartmentType department = userDepartment.map(ud -> ud.getDepartment().getName())
                 .orElse(null);
 
+        // 연락수단
+        List<TeamResponse.ContactRes> contacts = teamContactRepository.findAllByTeamId(teamId)
+                .stream()
+                .map(contact -> TeamResponse.ContactRes.builder()
+                        .type(contact.getType())
+                        .url(contact.getUrl())
+                        .build())
+                .toList();
+
+        // 이미지
         List<TeamImage> teamImages = teamImageRepository.findAllByTeamId(teamId);
         List<String> imageUrls = teamImages.stream()
                 .map(teamImage -> teamImage.getImage().getUrl())
@@ -109,7 +133,7 @@ public class TeamServiceImpl implements TeamService {
                 .category(team.getCategory())
                 .teamStatus(team.getStatus())
                 .detail(team.getDetail())
-                .contactUrl(team.getContactUrl())
+                .contacts(contacts)
                 .imageUrls(imageUrls)
                 .build();
         return detailRes;
@@ -155,6 +179,7 @@ public class TeamServiceImpl implements TeamService {
     @Transactional
     @Override
     public Void deleteTeam(Long userId, Long teamId) {
+
         Team team =  teamRepository.findById(teamId)
                 .orElseThrow(() -> new BusinessException(TeamErrorCode.TEAM_NOT_FOUND));
 
@@ -165,9 +190,13 @@ public class TeamServiceImpl implements TeamService {
             throw new BusinessException(TeamErrorCode.WRITER_DIFFERENCE);
         }
 
+        // 연락수단 삭제
+        teamContactRepository.deleteAllByTeamId(teamId);
+
         List<TeamImage> teamImages = teamImageRepository.findAllByTeamId(teamId);
         teamImageRepository.deleteAll(teamImages);
         teamImages.forEach(teamImage -> imageRepository.delete(teamImage.getImage()));
+
         userTeamRepository.deleteAllByTeamId(teamId);
         teamRepository.delete(team);
 
@@ -176,7 +205,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Transactional
     @Override
-    public Void updateTeam(Long userId, Long teamId, TeamRequest.UpdateReq req) {
+    public Long updateTeam(Long userId, Long teamId, TeamRequest.UpdateReq req) {
 
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new BusinessException(TeamErrorCode.TEAM_NOT_FOUND));
@@ -198,12 +227,30 @@ public class TeamServiceImpl implements TeamService {
                 req.getEndAt(),
                 req.getRemainingMember(),
                 req.getCategory(),
-                req.getDetail(),
-                req.getContactUrl()
+                req.getDetail()
         );
 
+        // 연락수단 수정
+        teamContactRepository.deleteAllByTeamId(teamId);
+
+        List<TeamContact> contacts = req.getContacts().stream()
+                .map(contact -> TeamContact.builder()
+                        .team(team)
+                        .type(contact.getType())
+                        .url(contact.getUrl())
+                        .build())
+                .toList();
+        teamContactRepository.saveAll(contacts);
+
         // 이미지 수정
-        teamImageRepository.deleteAllByTeamId(teamId);
+        List<TeamImage> teamImages = teamImageRepository.findAllByTeamId(teamId);
+        teamImageRepository.deleteAll(teamImages);
+
+        // 기존 Image 삭제
+        teamImages.forEach(teamImage ->
+                imageRepository.delete(teamImage.getImage()));
+
+        // 이미지 새로 저장
         if (req.getImageUrls() != null) {
             req.getImageUrls().forEach(imageUrl -> {
                 Image image = imageRepository.save(Image.builder()
@@ -216,7 +263,7 @@ public class TeamServiceImpl implements TeamService {
             });
         }
 
-        return null;
+        return team.getId();
     }
 
     //마감일 지난 팀 상태 변경
