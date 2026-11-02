@@ -228,6 +228,14 @@ public class AuthServiceImpl implements AuthService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
+                .onStatus(
+                        HttpStatusCode::isError,
+                        (request, responseBody) -> {
+                            throw new BusinessException(
+                                    AuthErrorCode.KAKAO_USER_INFO_REQUEST_FAILED
+                            );
+                        }
+                )
                 .body(new ParameterizedTypeReference<Map<String, Object>>() {});
 
         if (response == null || response.get("id") == null) {
