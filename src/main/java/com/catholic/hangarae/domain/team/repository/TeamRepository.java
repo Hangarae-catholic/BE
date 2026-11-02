@@ -10,13 +10,7 @@ import java.util.List;
 
 @Repository
 public interface TeamRepository extends JpaRepository<Team, Long> {
-    List<Team> findByTitleContainingOrDetailContaining(
-            String titleKeyword,
-            String detailKeyword
-    );
-
-    List<Team> findByEndAtBeforeAndStatus(
-            LocalDateTime now,
-            TeamStatus status
-    );
+    List<Team> findByTitleContainingOrDetailContaining( String titleKeyword, String detailKeyword);
+    List<Team> findByEndAtBeforeAndStatus(LocalDateTime now, TeamStatus status);
+    List<Team> findAllByUserIdOrderByCreatedAtDesc(Long userId);
 }

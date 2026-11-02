@@ -16,4 +16,6 @@ public interface TeamService {
     Void deleteTeam(Long userId, Long teamId);
     Long updateTeam(Long userId, Long teamId, TeamRequest.UpdateReq req);
     void closeExpiredTeams();
+    List<TeamResponse.ListRes> getMyTeams(Long userId);
+
 }

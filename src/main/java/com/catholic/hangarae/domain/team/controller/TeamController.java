@@ -65,4 +65,11 @@ public class TeamController {
                                                      @Valid @RequestBody TeamRequest.UpdateReq req) {
         return Response.of(TeamResultCode.TEAM_UPDATE_OK, teamService.updateTeam(userId, teamId, req));
     }
+
+    @GetMapping("/my")
+    public Response<List<TeamResponse.ListRes>> getMyTeams(@AuthUser Long userId) {
+        List<TeamResponse.ListRes> response = teamService.getMyTeams(userId);
+        return Response.of(TeamResultCode.TEAM_MY_LIST_OK, response);
+    }
+
 }

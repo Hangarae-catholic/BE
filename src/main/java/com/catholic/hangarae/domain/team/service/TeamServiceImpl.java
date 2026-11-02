@@ -274,4 +274,13 @@ public class TeamServiceImpl implements TeamService {
         List<Team> expiredTeams = teamRepository.findByEndAtBeforeAndStatus(LocalDateTime.now(), TeamStatus.RECRUITING);
         expiredTeams.forEach(team -> team.close());
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TeamResponse.ListRes> getMyTeams(Long userId) {
+        List<Team> teams = teamRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+        return teams.stream()
+                .map(this::toListRes)
+                .toList();
+    }
 }
