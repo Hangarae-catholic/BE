@@ -92,20 +92,36 @@ public class GeminiClient {
         String information = result.path("information").asString().strip();
         String responsible = result.path("responsible").asString().strip();
 
-        // 날짜가 불완전하거나 역전되면 일정으로 노출하지 않음
+        // 일정 종류에 따라 날짜를 정함, 날짜 규칙은 모델이 아닌 코드에서 적용
+        String scheduleType = result.path("schedule_type").asString();
         LocalDate startDate = date(result.path("start_date").asString());
         LocalDate endDate = date(result.path("end_date").asString());
+        if ("DEADLINE".equals(scheduleType)) {
+            // 마감일만 있으면 게시일부터 마감일까지
+            LocalDate deadline = endDate == null ? startDate : endDate;
+            endDate = deadline;
+            startDate = deadline == null || deadline.isBefore(notice.getPublishedAt()) ? deadline : notice.getPublishedAt();
+        } else if ("EVENT".equals(scheduleType) && endDate == null) {
+            endDate = startDate;
+        } else if (!"PERIOD".equals(scheduleType) && !"EVENT".equals(scheduleType)) {
+            startDate = null;
+            endDate = null;
+        }
+        // 날짜가 불완전하거나 역전되면 일정으로 노출하지 않음
         if (startDate == null || endDate == null || endDate.isBefore(startDate)) {
             startDate = null;
             endDate = null;
         }
 
-        // 건물 목록에 없는 장소는 지도에 표시하지 않음
+        // 직접 모여 참여하는 행사만 지도에 표시
         String locationName = result.path("location").asString();
-        Location location = BUILDINGS.keySet().stream()
-                .filter(item -> item.name().equals(locationName))
-                .findFirst()
-                .orElse(null);
+        Location location = null;
+        if ("IN_PERSON".equals(result.path("attendance").asString())) {
+            location = BUILDINGS.keySet().stream()
+                    .filter(item -> item.name().equals(locationName))
+                    .findFirst()
+                    .orElse(null);
+        }
 
         return GeminiDescribeRes.builder()
                 .summary(cut(summary, 255))
@@ -124,10 +140,15 @@ public class GeminiClient {
                 가톨릭대학교 성심교정 공지를 학생용 캘린더와 지도에 표시할 정보로 정리하세요.
                 - summary: 공지 내용을 한 문장으로 소개, 60자 이내
                 - information: 학생에게 필요한 내용(대상, 일정, 신청 방법, 문의처)을 500자 이내로 정리, 원문에 없는 내용은 쓰지 않음
-                - start_date, end_date: 공지의 주된 행사나 신청 기간, yyyy-MM-dd 형식. 하루 일정은 같은 날짜. 연도가 없으면 게시일 기준으로 판단. 없으면 빈 문자열
-                - location: 행사 장소가 아래 건물이면 해당 값, 온라인이거나 교외이거나 명시되지 않으면 NONE. 접수처나 문의처 위치는 장소가 아님
+                - schedule_type: 공지의 주된 일정 종류
+                  EVENT=특정 날짜에 열리는 행사, PERIOD=시작일과 종료일이 있는 신청·운영 기간, DEADLINE=마감일만 있는 신청·제출
+                  NONE=본문에 날짜가 없거나 결과 발표, 당첨자 안내, 사후 안내처럼 학생이 참여할 일정이 없음
+                - start_date, end_date: 본문에 적힌 주된 일정의 날짜, yyyy-MM-dd 형식. 연도가 없으면 게시일 기준으로 판단
+                  DEADLINE은 end_date에 마감일, 본문에 없는 날짜는 쓰지 않고 빈 문자열
+                - attendance: IN_PERSON=학생이 교내 장소에 직접 모여 참여, ONLINE=온라인 참여, NOT_EVENT=신청, 제출, 안내만 있고 모이는 행사가 아님
+                - location: 행사가 열리는 건물이 아래 목록에 있으면 해당 값, 없으면 NONE. 접수처, 제출처, 문의처, 사무실 위치는 행사 장소가 아님
                   %s
-                - responsible: 주최 또는 주관 기관, 본문에 없으면 빈 문자열
+                - responsible: 본문에 적힌 주최 또는 주관 기관, 게시 학과나 작성자로 추측하지 않음. 본문에 없으면 빈 문자열
 
                 제목: %s
                 게시일: %s
@@ -136,7 +157,7 @@ public class GeminiClient {
                 본문:
                 %s
                 """.formatted(buildings, notice.getName(), notice.getPublishedAt(),
-                Objects.toString(notice.getSourceDepartment(), "학교 공식 홈페이지"), notice.getWriter(),
+                Objects.toString(notice.getSourceDepartment(), "없음"), notice.getWriter(),
                 notice.getInformation());
     }
 
@@ -147,8 +168,10 @@ public class GeminiClient {
         Map<String, Object> fields = new LinkedHashMap<>();
         fields.put("summary", Map.of("type", "string"));
         fields.put("information", Map.of("type", "string"));
+        fields.put("schedule_type", Map.of("type", "string", "enum", List.of("EVENT", "PERIOD", "DEADLINE", NONE)));
         fields.put("start_date", Map.of("type", "string"));
         fields.put("end_date", Map.of("type", "string"));
+        fields.put("attendance", Map.of("type", "string", "enum", List.of("IN_PERSON", "ONLINE", "NOT_EVENT")));
         fields.put("location", Map.of("type", "string", "enum", locations));
         fields.put("responsible", Map.of("type", "string"));
         return Map.of("type", "object", "properties", fields, "required", List.copyOf(fields.keySet()));
