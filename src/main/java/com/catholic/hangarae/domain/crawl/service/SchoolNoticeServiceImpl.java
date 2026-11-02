@@ -7,6 +7,8 @@ import com.catholic.hangarae.domain.crawl.dto.response.BoardPageRes;
 import com.catholic.hangarae.domain.crawl.dto.response.GeminiDescribeRes;
 import com.catholic.hangarae.domain.crawl.dto.response.JevClassifyRes;
 import com.catholic.hangarae.domain.crawl.dto.response.SchoolNoticeRes;
+import com.catholic.hangarae.domain.department.repository.DepartmentRepository;
+import com.catholic.hangarae.global.apiPayLoad.error.CrawlErrorCode;
 import com.catholic.hangarae.global.apiPayLoad.exception.BusinessException;
 import com.catholic.hangarae.global.config.GeminiProperties;
 import com.catholic.hangarae.global.config.JevProperties;
@@ -32,6 +34,7 @@ public class SchoolNoticeServiceImpl implements SchoolNoticeService {
     private final JevClient jevClient;
     private final GeminiClient geminiClient;
     private final CollectedNoticeService collectedNoticeService;
+    private final DepartmentRepository departmentRepository;
     private final AtomicBoolean running = new AtomicBoolean();
 
     @Override
@@ -54,6 +57,12 @@ public class SchoolNoticeServiceImpl implements SchoolNoticeService {
 
     // 한 게시판의 실패가 다른 게시판 수집을 막지 않음
     private void collectSource(SchoolNoticeProperties.Source source) {
+        // 학과 데이터가 없으면 공지 실패가 아닌 설정 오류라 재시도 횟수를 쓰지 않고 건너뜀
+        if (source.getDepartmentType() != null
+                && departmentRepository.findByName(source.getDepartmentType()).isEmpty()) {
+            log.error("학교 공지 게시판 건너뜀, 게시판={}, 오류={}", source.getKey(), CrawlErrorCode.DEPARTMENT_NOT_FOUND.getCode());
+            return;
+        }
         String url = source.getUrl();
         Set<String> pages = new HashSet<>();
         Set<Long> articles = new HashSet<>();

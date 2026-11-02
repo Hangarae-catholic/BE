@@ -15,6 +15,7 @@ public enum CrawlErrorCode implements ErrorCode {
     GEMINI_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "CRAWL005", "Gemini 요약 요청에 실패했습니다"),
     INVALID_GEMINI_RESPONSE(HttpStatus.BAD_GATEWAY, "CRAWL006", "Gemini 요약 결과가 올바르지 않습니다"),
     GEMINI_API_KEY_REQUIRED(HttpStatus.INTERNAL_SERVER_ERROR, "CRAWL007", "Gemini API 키를 설정해 주세요"),
+    DEPARTMENT_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "CRAWL008", "게시판 학과가 학과 목록에 없습니다"),
     ;
 
     private final HttpStatus httpStatus;

@@ -55,7 +55,7 @@ public class CollectedNoticeServiceImpl implements CollectedNoticeService {
         Department department = null;
         if (data.getDepartmentType() != null) {
             department = departmentRepository.findByName(data.getDepartmentType())
-                    .orElseThrow(() -> new BusinessException(CrawlErrorCode.INVALID_BOARD_CONTENT));
+                    .orElseThrow(() -> new BusinessException(CrawlErrorCode.DEPARTMENT_NOT_FOUND));
         }
 
         // 원문 정보로 공지 생성, 제미나이 결과가 있으면 요약 정보로 채움
