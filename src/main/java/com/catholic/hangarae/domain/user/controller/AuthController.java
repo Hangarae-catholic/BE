@@ -4,7 +4,7 @@ import com.catholic.hangarae.domain.user.dto.request.AuthRequest;
 import com.catholic.hangarae.domain.user.dto.response.KakaoLoginRes;
 import com.catholic.hangarae.domain.user.dto.response.TokenRes;
 import com.catholic.hangarae.domain.user.service.AuthService;
-import com.catholic.hangarae.domain.user.vo.KakaoNextStep;
+import com.catholic.hangarae.domain.user.vo.OAuthNextStep;
 import com.catholic.hangarae.global.apiPayLoad.response.Response;
 import com.catholic.hangarae.global.apiPayLoad.result.UserResultCode;
 import com.catholic.hangarae.global.security.annotation.AuthUser;
@@ -65,7 +65,7 @@ public class AuthController {
     @Operation(summary = "카카오 로그인 콜백")
     public Response<KakaoLoginRes> kakaoCallback(@RequestParam("code") String code) {
         KakaoLoginRes result = authService.kakaoLogin(code);
-        if (result.nextStep() == KakaoNextStep.SIGN_UP) {
+        if (result.nextStep() == OAuthNextStep.SIGN_UP) {
             return Response.ok(UserResultCode.USER_KAKAO_SIGNUP_OK, result);
         }
         return Response.ok(UserResultCode.USER_KAKAO_LOGIN_OK, result);

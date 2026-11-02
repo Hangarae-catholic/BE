@@ -9,16 +9,16 @@ import com.catholic.hangarae.domain.user.entity.Provider;
 import com.catholic.hangarae.domain.user.repository.ProviderRepository;
 import com.catholic.hangarae.domain.user.repository.UserRepository;
 import com.catholic.hangarae.domain.user.vo.AuthProvider;
-import com.catholic.hangarae.domain.user.vo.KakaoNextStep;
+import com.catholic.hangarae.domain.user.vo.OAuthNextStep;
 import com.catholic.hangarae.global.apiPayLoad.error.AuthErrorCode;
 import com.catholic.hangarae.global.apiPayLoad.error.UserErrorCode;
 import com.catholic.hangarae.global.apiPayLoad.exception.BusinessException;
 import com.catholic.hangarae.global.security.jwt.JwtTokenProvider;
 import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -206,8 +206,11 @@ public class AuthServiceImpl implements AuthService {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(form)
                 .retrieve()
+                .onStatus(
+                        HttpStatusCode::isError,
+                        (request, responseBody) -> {
+                            throw new BusinessException(AuthErrorCode.KAKAO_TOKEN_REQUEST_FAILED);})
                 .body(new ParameterizedTypeReference<Map<String, Object>>() {});
-
         if (response == null || !(response.get("access_token") instanceof String accessToken)) {
             throw new BusinessException(AuthErrorCode.KAKAO_TOKEN_REQUEST_FAILED);
         }
@@ -258,12 +261,12 @@ public class AuthServiceImpl implements AuthService {
                 .orElse(null);
 
         User user;
-        KakaoNextStep nextStep;
+        OAuthNextStep oAuthNextStep;
 
         if (provider != null) {
             // 기존 회원
             user = provider.getUser();
-            nextStep = KakaoNextStep.LOGIN;
+            oAuthNextStep = OAuthNextStep.LOGIN;
 
         } else {
             // 신규 회원
@@ -288,7 +291,7 @@ public class AuthServiceImpl implements AuthService {
                     .build();
             providerRepository.save(newProvider);
 
-            nextStep = KakaoNextStep.SIGN_UP;
+            oAuthNextStep = OAuthNextStep.SIGN_UP;
         }
 
         // 행가래 JWT 발급
@@ -299,8 +302,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 결과 반환
         return new KakaoLoginRes(
-                nextStep,
-                nextStep == KakaoNextStep.SIGN_UP ? email : null,
+                oAuthNextStep, oAuthNextStep == OAuthNextStep.SIGN_UP ? email : null,
                 new TokenRes(accessToken, refreshToken)
         );
     }
