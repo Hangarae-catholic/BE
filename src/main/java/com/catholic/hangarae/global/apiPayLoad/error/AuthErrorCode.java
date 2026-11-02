@@ -25,7 +25,9 @@ public enum AuthErrorCode implements ErrorCode {
     JWT_CONFIGURATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"AUTH015", "JWT 설정이 올바르지 않습니다."),
     INVALID_NICKNAME_FORMAT(HttpStatus.BAD_REQUEST,"AUTH016", "올바른 닉네임 형식이 아닙니다"),
     LOGIN_RESTRICTED(HttpStatus.TOO_MANY_REQUESTS,"AUTH017", "로그인 시도 횟수를 초과했습니다. 비밀번호를 재설정해 주세요."),
-
+    KAKAO_TOKEN_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "AUTH018", "카카오 토큰 발급에 실패했습니다."),
+    KAKAO_USER_INFO_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "AUTH019", "카카오 사용자 정보를 가져오지 못했습니다."),
+    KAKAO_EMAIL_NOT_PROVIDED(HttpStatus.BAD_REQUEST, "AUTH020", "카카오 계정에서 이메일을 제공받지 못했습니다."),
     ;
 
     private final HttpStatus httpStatus;
