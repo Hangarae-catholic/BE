@@ -15,10 +15,13 @@ import java.util.Optional;
 
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
-    // 선택한 날짜와 행사 기간이 겹치는 목록
+    boolean existsByTypeAndUrl(NoticeType type, String url);
+
+    // 선택한 날짜와 행사 기간이 겹치는 목록, 장소가 없는 공지는 지도에 표시하지 않음
     @Query("""
             select n from Notice n
-            where n.startAt < :dayEnd
+            where n.location is not null
+              and n.startAt < :dayEnd
               and (n.endAt >= :dayStart or (n.endAt is null and n.startAt >= :dayStart))
             order by n.startAt asc, n.id asc
             """)
@@ -27,7 +30,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
     @EntityGraph(attributePaths = "department")
     Optional<Notice> findById(Long noticeId);
 
-    // 학과 지정 일정은 계열로, 학과 없는 일정은 JEV 분류와 회원 관심 분야로 조회
+    // 학과 지정 일정은 계열로, 학과 없는 일정은 관련도 0.7 이상인 회원 관심 분야로 조회
     @Query("""
             select n from Notice n
             left join fetch n.department d
@@ -39,6 +42,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
                        where ni.notice = n
                          and ui.user.id = :userId
                          and ni.interest = ui.interest
+                         and ni.score >= 0.7
                    )))
               and n.startAt < :monthEnd
               and (n.endAt >= :monthStart or (n.endAt is null and n.startAt >= :monthStart))

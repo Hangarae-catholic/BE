@@ -89,11 +89,13 @@ jobs:
           HANGARAE_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/hangarae:sha-${{ github.sha }}
           PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           set -euo pipefail
           test -s docker-compose.yml
 
-          names=(DOCKERHUB_USERNAME DOCKERHUB_TOKEN HANGARAE_IMAGE PROD_DB_PASSWORD JWT_SECRET)
+          names=(DOCKERHUB_USERNAME DOCKERHUB_TOKEN HANGARAE_IMAGE PROD_DB_PASSWORD JWT_SECRET TYPESAFE_API_KEY GEMINI_API_KEY)
           DEPLOY_PAYLOAD="$(
             {
               for name in "${names[@]}"; do

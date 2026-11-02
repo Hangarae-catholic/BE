@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: classpath:school-notice.yml
   application:
     name: hangarae
   profiles:
