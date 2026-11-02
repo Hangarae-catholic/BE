@@ -16,6 +16,12 @@ services:
       PROD_DB_USERNAME: hangarae_app
       PROD_DB_PASSWORD: ${PROD_DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+      TYPESAFE_API_KEY: ${TYPESAFE_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      SCHOOL_NOTICE_ENABLED: "true"
+      SCHOOL_NOTICE_RUN_ON_STARTUP: "true" # 백필 끝나면 false
+      JEV_ENABLED: "true"
+      GEMINI_ENABLED: "false" # 백필 끝나면 true
       JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=50.0 -XX:+ExitOnOutOfMemoryError"
       TZ: Asia/Seoul
 
