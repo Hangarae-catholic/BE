@@ -67,9 +67,15 @@ public class TeamController {
     }
 
     @GetMapping("/my")
+    @Operation(summary = "사용자가 작성한 팀 매칭 목록 조회")
     public Response<List<TeamResponse.ListRes>> getMyTeams(@AuthUser Long userId) {
         List<TeamResponse.ListRes> response = teamService.getMyTeams(userId);
         return Response.of(TeamResultCode.TEAM_MY_LIST_OK, response);
     }
 
+    @PatchMapping("/{teamId}/close")
+    @Operation(summary = "팀 매칭 수동 마감")
+    public Response<Long> closeTeam(@AuthUser Long userId, @PathVariable Long teamId) {
+        return Response.of(TeamResultCode.TEAM_CLOSE_SUCCESS, teamService.closeTeam(userId, teamId));
+    }
 }

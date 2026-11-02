@@ -45,6 +45,7 @@ public class TeamServiceImpl implements TeamService {
     private final UserTeamRepository userTeamRepository;
     private final TeamContactRepository teamContactRepository;
 
+    // 팀 생성
     @Transactional
     @Override
     public Long createTeam(Long userId, TeamRequest.CreateReq req) {
@@ -92,6 +93,8 @@ public class TeamServiceImpl implements TeamService {
         return savedTeam.getId();
     }
 
+
+    // 팀 상세조회
     @Transactional(readOnly = true)
     @Override
     public TeamResponse.DetailRes getTeamDetail(Long teamId) {
@@ -162,17 +165,18 @@ public class TeamServiceImpl implements TeamService {
                 .build();
     }
 
+    // 팀 전체 리스트 조회 - RECRUITING 먼저 조회
     @Transactional(readOnly = true)
     @Override
     public List<TeamResponse.ListRes> getTeamList(){
-        List<Team> teams = teamRepository.findAll();
+        List<Team> teams = teamRepository.findAllOrderByRecruitingFirst();
         return teams.stream().map(this::toListRes).toList();
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<TeamResponse.ListRes> searchTeams(String keyword) {
-        List<Team> teams = teamRepository.findByTitleContainingOrDetailContaining(keyword, keyword);
+        List<Team> teams = teamRepository.searchOrderByRecruitingFirst(keyword);
         return teams.stream().map(this::toListRes).toList();
     }
 
@@ -266,7 +270,7 @@ public class TeamServiceImpl implements TeamService {
         return team.getId();
     }
 
-    //마감일 지난 팀 상태 변경
+    //마감일 지난 팀 상태 변경 - 자동 마감
     @Scheduled(fixedRate = 300000) //5분마다 확인
     @Transactional
     @Override
@@ -275,6 +279,7 @@ public class TeamServiceImpl implements TeamService {
         expiredTeams.forEach(team -> team.close());
     }
 
+    // 사용자가 작성한 팀 리스트 조회
     @Override
     @Transactional(readOnly = true)
     public List<TeamResponse.ListRes> getMyTeams(Long userId) {
@@ -282,5 +287,29 @@ public class TeamServiceImpl implements TeamService {
         return teams.stream()
                 .map(this::toListRes)
                 .toList();
+    }
+
+    // 작성자가 수동 마감
+    @Transactional
+    @Override
+    public Long closeTeam(Long userId, Long teamId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new BusinessException(TeamErrorCode.TEAM_NOT_FOUND));
+
+        if (!team.getUser().getId().equals(user.getId())) {
+            throw new BusinessException(TeamErrorCode.WRITER_DIFFERENCE);
+        }
+
+        // 이미 마감된 팀인지 확인
+        if (team.getStatus() == TeamStatus.CLOSED) {
+            throw new BusinessException(TeamErrorCode.TEAM_ALREADY_CLOSED);
+        }
+
+        team.close();
+        return team.getId();
     }
 }
