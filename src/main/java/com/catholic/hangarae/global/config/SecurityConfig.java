@@ -46,7 +46,7 @@ public class SecurityConfig {
                             .requestMatchers("/actuator/health", "/actuator/health/**").permitAll() // 배포 상태 확인
                             .requestMatchers("/index.html", "/static/**", "/favicon.ico").permitAll() // 정적 파일 허용
                             .requestMatchers("/swagger", "/swagger/", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger 허용
-                            .requestMatchers("/api/auth/kakao", "/api/auth/kakao/callback","/api/auth/naver/callback").permitAll();
+                            .requestMatchers("/api/auth/kakao", "/api/auth/kakao/callback","/api/auth/google","/api/auth/google/callback").permitAll();
 
                     if (isDev) {
                         auth.anyRequest().permitAll(); // 모든 요청 허용 (테스트용)

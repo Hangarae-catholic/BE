@@ -16,6 +16,9 @@ public enum UserResultCode implements ResultCode {
     USER_KAKAO_SIGNUP_OK(HttpStatus.CREATED, "AUTH005", "카카오 회원가입 성공"),
     USER_KAKAO_LOGIN_OK(HttpStatus.OK, "AUTH006", "카카오 로그인 성공"),
 
+    USER_GOOGLE_SIGNUP_OK(HttpStatus.CREATED, "AUTH007", "구글 회원가입 성공"),
+    USER_GOOGLE_LOGIN_OK(HttpStatus.OK, "AUTH008", "구글 로그인 성공"),
+
     USER_PROFILE_CREATE_OK(HttpStatus.CREATED, "USER001", "프로필 생성 성공"),
     USER_PROFILE_GET_OK(HttpStatus.OK, "USER002", "프로필 조회 성공"),
     USER_PROFILE_UPDATE_OK(HttpStatus.OK, "USER003", "프로필 수정 성공"),

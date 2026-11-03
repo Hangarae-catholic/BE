@@ -1,7 +1,7 @@
 package com.catholic.hangarae.domain.user.controller;
 
 import com.catholic.hangarae.domain.user.dto.request.AuthRequest;
-import com.catholic.hangarae.domain.user.dto.response.KakaoLoginRes;
+import com.catholic.hangarae.domain.user.dto.response.OAuthLoginRes;
 import com.catholic.hangarae.domain.user.dto.response.TokenRes;
 import com.catholic.hangarae.domain.user.service.AuthService;
 import com.catholic.hangarae.domain.user.vo.OAuthNextStep;
@@ -63,11 +63,30 @@ public class AuthController {
 
     @GetMapping("/kakao/callback")
     @Operation(summary = "카카오 로그인 콜백")
-    public Response<KakaoLoginRes> kakaoCallback(@RequestParam("code") String code) {
-        KakaoLoginRes result = authService.kakaoLogin(code);
+    public Response<OAuthLoginRes> kakaoCallback(@RequestParam("code") String code) {
+        OAuthLoginRes result = authService.kakaoLogin(code);
         if (result.nextStep() == OAuthNextStep.SIGN_UP) {
             return Response.ok(UserResultCode.USER_KAKAO_SIGNUP_OK, result);
         }
         return Response.ok(UserResultCode.USER_KAKAO_LOGIN_OK, result);
+    }
+
+    @GetMapping("/google")
+    @Operation(summary = "구글 로그인 시작")
+    public ResponseEntity<Void> googleLogin() {
+        return ResponseEntity
+                .status(302)
+                .header("Location", authService.getGoogleLoginUrl())
+                .build();
+    }
+
+    @GetMapping("/google/callback")
+    @Operation(summary = "구글 로그인 콜백")
+    public Response<OAuthLoginRes> googleCallback(@RequestParam("code") String code) {
+        OAuthLoginRes result = authService.googleLogin(code);
+        if (result.nextStep() == OAuthNextStep.SIGN_UP) {
+            return Response.ok(UserResultCode.USER_GOOGLE_SIGNUP_OK, result);
+        }
+        return Response.ok(UserResultCode.USER_GOOGLE_LOGIN_OK, result);
     }
 }
