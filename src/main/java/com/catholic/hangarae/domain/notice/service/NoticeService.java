@@ -12,6 +12,7 @@ import java.util.List;
 public interface NoticeService {
 
     List<NoticeListRes> getNotices(LocalDate date);
+    List<NoticeListRes> getRecommendedNotices(Long userId, int size);
     NoticeDetailRes getNotice(Long noticeId);
 
     Long createNotice(Long userId, NoticeCreateReq req);

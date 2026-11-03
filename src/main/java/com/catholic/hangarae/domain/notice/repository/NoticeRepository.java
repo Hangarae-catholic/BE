@@ -30,6 +30,25 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
     @EntityGraph(attributePaths = "department")
     Optional<Notice> findById(Long noticeId);
 
+    // 오늘 열리는 행사 중 전교생 또는 내 학과 공지, 내 관심 분야 점수 0.7 이상만 점수 순으로 조회
+    @Query("""
+            select n from Notice n
+            join NoticeInterest ni on ni.notice = n
+            join UserInterest ui on ui.interest = ni.interest and ui.user.id = :userId
+            where n.location is not null
+              and ni.score >= 0.7
+              and n.startAt < :dayEnd
+              and (n.endAt >= :dayStart or (n.endAt is null and n.startAt >= :dayStart))
+              and (n.department is null or n.department.id in (
+                  select ud.department.id from UserDepartment ud where ud.user.id = :userId
+              ))
+            group by n
+            order by max(ni.score) desc, n.startAt asc, n.id asc
+            """)
+    List<Notice> findRecommendedNotices(@Param("userId") Long userId,
+                                        @Param("dayStart") LocalDateTime dayStart,
+                                        @Param("dayEnd") LocalDateTime dayEnd);
+
     // 학과 지정 일정은 계열로, 학과 없는 일정은 관련도 0.7 이상인 회원 관심 분야로 조회
     @Query("""
             select n from Notice n

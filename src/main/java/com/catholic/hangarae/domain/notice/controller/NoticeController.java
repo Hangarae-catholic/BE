@@ -34,6 +34,13 @@ public class NoticeController {
         return Response.of(NoticeResultCode.NOTICE_LIST_OK, noticeService.getNotices(date));
     }
 
+    @GetMapping("/recommend")
+    @Operation(summary = "오늘의 추천 행사", description = "오늘 열리는 행사 중 관심 분야와 학과에 맞는 행사를 관심 분야 점수 순으로 조회")
+    public Response<List<NoticeListRes>> getRecommendedNotices(
+            @AuthUser Long userId, @RequestParam(defaultValue = "5") int size) {
+        return Response.of(NoticeResultCode.NOTICE_RECOMMEND_OK, noticeService.getRecommendedNotices(userId, size));
+    }
+
     @GetMapping("/{noticeId}")
     @Operation(summary = "행사 상세 조회")
     public Response<NoticeDetailRes> getNotice(@PathVariable Long noticeId) {
