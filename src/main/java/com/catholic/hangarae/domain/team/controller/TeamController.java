@@ -4,6 +4,7 @@ import com.catholic.hangarae.domain.team.dto.request.TeamRequest;
 import com.catholic.hangarae.domain.team.dto.response.TeamResponse;
 import com.catholic.hangarae.domain.team.entity.Team;
 import com.catholic.hangarae.domain.team.service.TeamService;
+import com.catholic.hangarae.domain.team.vo.TeamCategory;
 import com.catholic.hangarae.global.apiPayLoad.response.Response;
 import com.catholic.hangarae.global.apiPayLoad.result.TeamResultCode;
 import com.catholic.hangarae.global.security.annotation.AuthUser;
@@ -32,9 +33,11 @@ public class TeamController {
         return Response.of(TeamResultCode.TEAM_CREATE_OK, teamId);}
 
     @GetMapping
-    @Operation(summary = "팀 매칭 목록 조회", description = "팀 매칭 게시글 목록을 조회합니다.")
-    public Response<List<TeamResponse.ListRes>> getTeamList() {
-        List<TeamResponse.ListRes> response = teamService.getTeamList();
+    @Operation(summary = "팀 매칭 목록 조회 및 검색", description = "팀 매칭 목록을 전체 조회, 검색, 카테고리별 조회 합니다."
+    )
+    public Response<List<TeamResponse.ListRes>> getTeams(@RequestParam(required = false) TeamCategory category,
+                                                         @RequestParam(required = false) String keyword) {
+        List<TeamResponse.ListRes> response = teamService.getTeams(category, keyword);
         return Response.of(TeamResultCode.TEAM_LIST_OK, response);
     }
 
@@ -43,14 +46,6 @@ public class TeamController {
     public Response<TeamResponse.DetailRes> getTeamDetail(@PathVariable Long teamId) {
         TeamResponse.DetailRes response = teamService.getTeamDetail(teamId);
         return Response.of(TeamResultCode.TEAM_DETAIL_OK, response);
-    }
-
-    @GetMapping("/search")
-    @Operation(summary = "팀 매칭 검색")
-    public Response<List<TeamResponse.ListRes>> searchTeams(
-            @RequestParam String keyword) {
-        List<TeamResponse.ListRes> response = teamService.searchTeams(keyword);
-        return Response.of(TeamResultCode.TEAM_SEARCH_OK, response);
     }
 
     @DeleteMapping("/{teamId}")

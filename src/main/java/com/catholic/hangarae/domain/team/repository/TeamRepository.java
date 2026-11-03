@@ -1,6 +1,7 @@
 package com.catholic.hangarae.domain.team.repository;
 
 import com.catholic.hangarae.domain.team.entity.Team;
+import com.catholic.hangarae.domain.team.vo.TeamCategory;
 import com.catholic.hangarae.domain.team.vo.TeamStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,22 +17,18 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     @Query("""
     SELECT t FROM Team t
+    WHERE (:category IS NULL OR t.category = :category)
+      AND (
+          :keyword IS NULL
+          OR t.title LIKE %:keyword%
+          OR t.detail LIKE %:keyword%
+      )
     ORDER BY
         CASE WHEN t.status = 'RECRUITING' THEN 0 ELSE 1 END,
         t.id DESC
 """)
-    List<Team> findAllOrderByRecruitingFirst();
-
-
-    @Query("""
-    SELECT t FROM Team t
-    WHERE t.title LIKE %:keyword%
-       OR t.detail LIKE %:keyword%
-    ORDER BY
-        CASE WHEN t.status = 'RECRUITING' THEN 0 ELSE 1 END,
-        t.id DESC
-""")
-    List<Team> searchOrderByRecruitingFirst(
+    List<Team> searchTeams(
+            @Param("category") TeamCategory category,
             @Param("keyword") String keyword
     );
 
