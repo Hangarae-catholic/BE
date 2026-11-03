@@ -14,6 +14,7 @@ import com.catholic.hangarae.domain.team.repository.TeamContactRepository;
 import com.catholic.hangarae.domain.team.repository.TeamImageRepository;
 import com.catholic.hangarae.domain.team.repository.TeamRepository;
 import com.catholic.hangarae.domain.team.repository.UserTeamRepository;
+import com.catholic.hangarae.domain.team.vo.TeamCategory;
 import com.catholic.hangarae.domain.team.vo.TeamStatus;
 import com.catholic.hangarae.domain.team.vo.UserTeamRole;
 import com.catholic.hangarae.domain.user.entity.User;
@@ -165,18 +166,14 @@ public class TeamServiceImpl implements TeamService {
                 .build();
     }
 
-    // 팀 전체 리스트 조회 - RECRUITING 먼저 조회
+    // 팀 리스트 조회 - RECRUITING 먼저 조회 / 검색 / 카테고리 별 조회
     @Transactional(readOnly = true)
     @Override
-    public List<TeamResponse.ListRes> getTeamList(){
-        List<Team> teams = teamRepository.findAllOrderByRecruitingFirst();
-        return teams.stream().map(this::toListRes).toList();
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<TeamResponse.ListRes> searchTeams(String keyword) {
-        List<Team> teams = teamRepository.searchOrderByRecruitingFirst(keyword);
+    public List<TeamResponse.ListRes> getTeams(TeamCategory category, String keyword) {
+        if (keyword != null && keyword.isBlank()) {
+            keyword = null;
+        }
+        List<Team> teams = teamRepository.searchTeams(category, keyword);
         return teams.stream().map(this::toListRes).toList();
     }
 
