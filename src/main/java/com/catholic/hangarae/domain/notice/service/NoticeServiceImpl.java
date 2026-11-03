@@ -29,8 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +65,45 @@ public class NoticeServiceImpl implements NoticeService {
         // 목록 응답 생성
         List<NoticeListRes> response = new ArrayList<>();
         for (Notice notice : notices) {
+            NoticeListRes item = NoticeListRes.builder()
+                    .noticeId(notice.getId())
+                    .name(notice.getName())
+                    .startAt(notice.getStartAt())
+                    .endAt(notice.getEndAt())
+                    .location(notice.getLocation())
+                    .summary(notice.getSummary())
+                    .approved(notice.isApproved())
+                    .build();
+            response.add(item);
+        }
+        return response;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<NoticeListRes> getRecommendedNotices(Long userId, int size) {
+        // 프로필을 만든 회원만 추천
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+        if (user.getCharacter() == null) {
+            throw new BusinessException(UserErrorCode.PROFILE_NOT_FOUND);
+        }
+
+        // 오늘 열리는 행사 중 관심 분야 점수 순으로 조회
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        List<Notice> notices = noticeRepository.findRecommendedNotices(
+                userId, today.atStartOfDay(), today.plusDays(1).atStartOfDay());
+
+        // 여러 학과 게시판에 올라온 같은 공지는 제목과 기간이 같으면 하나만 추천
+        List<NoticeListRes> response = new ArrayList<>();
+        Set<String> shown = new HashSet<>();
+        for (Notice notice : notices) {
+            if (response.size() >= size) {
+                break;
+            }
+            if (!shown.add(notice.getName() + "|" + notice.getStartAt() + "|" + notice.getEndAt())) {
+                continue;
+            }
             NoticeListRes item = NoticeListRes.builder()
                     .noticeId(notice.getId())
                     .name(notice.getName())

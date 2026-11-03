@@ -113,10 +113,10 @@ public class GeminiClient {
             endDate = null;
         }
 
-        // 직접 모여 참여하는 행사만 지도에 표시
+        // 직접 모여 참여하는 행사만 장소를 저장, 신청 기간이나 시험 공지는 지도와 홈에 표시하지 않음
         String locationName = result.path("location").asString();
         Location location = null;
-        if ("IN_PERSON".equals(result.path("attendance").asString())) {
+        if ("EVENT".equals(scheduleType) && "IN_PERSON".equals(result.path("attendance").asString())) {
             location = BUILDINGS.keySet().stream()
                     .filter(item -> item.name().equals(locationName))
                     .findFirst()
@@ -141,11 +141,12 @@ public class GeminiClient {
                 - summary: 공지 내용을 한 문장으로 소개, 60자 이내
                 - information: 학생에게 필요한 내용(대상, 일정, 신청 방법, 문의처)을 500자 이내로 정리, 원문에 없는 내용은 쓰지 않음
                 - schedule_type: 공지의 주된 일정 종류
-                  EVENT=특정 날짜에 열리는 행사, PERIOD=시작일과 종료일이 있는 신청·운영 기간, DEADLINE=마감일만 있는 신청·제출
+                  EVENT=특강, 설명회, 공연, 전시, 대회처럼 학생이 직접 참여하는 행사가 열리는 날짜나 기간
+                  PERIOD=시작일과 종료일이 있는 신청·접수·운영 기간, DEADLINE=마감일만 있는 신청·제출
                   NONE=본문에 날짜가 없거나 결과 발표, 당첨자 안내, 사후 안내처럼 학생이 참여할 일정이 없음
                 - start_date, end_date: 본문에 적힌 주된 일정의 날짜, yyyy-MM-dd 형식. 연도가 없으면 게시일 기준으로 판단
                   DEADLINE은 end_date에 마감일, 본문에 없는 날짜는 쓰지 않고 빈 문자열
-                - attendance: IN_PERSON=학생이 교내 장소에 직접 모여 참여, ONLINE=온라인 참여, NOT_EVENT=신청, 제출, 안내만 있고 모이는 행사가 아님
+                - attendance: IN_PERSON=학생이 교내 장소에 직접 모여 참여, ONLINE=온라인 참여, NOT_EVENT=신청, 제출, 안내만 있고 모이는 행사가 아님. 시험, 수업, 강의실 변경도 행사가 아님
                 - location: 행사가 열리는 건물이 아래 목록에 있으면 해당 값, 없으면 NONE. 접수처, 제출처, 문의처, 사무실 위치는 행사 장소가 아님
                   %s
                 - responsible: 본문에 적힌 주최 또는 주관 기관, 게시 학과나 작성자로 추측하지 않음. 본문에 없으면 빈 문자열
