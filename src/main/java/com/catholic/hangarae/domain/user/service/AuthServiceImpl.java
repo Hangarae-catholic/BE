@@ -1,8 +1,8 @@
 package com.catholic.hangarae.domain.user.service;
 
 import com.catholic.hangarae.domain.user.dto.request.AuthRequest;
-import com.catholic.hangarae.domain.user.dto.response.KakaoLoginRes;
-import com.catholic.hangarae.domain.user.dto.response.KakaoUserInfo;
+import com.catholic.hangarae.domain.user.dto.response.OAuthLoginRes;
+import com.catholic.hangarae.domain.user.dto.response.OAuthUserInfo;
 import com.catholic.hangarae.domain.user.dto.response.TokenRes;
 import com.catholic.hangarae.domain.user.entity.User;
 import com.catholic.hangarae.domain.user.entity.Provider;
@@ -42,12 +42,17 @@ public class AuthServiceImpl implements AuthService {
 
     @Value("${kakao.client-id}")
     private String kakaoClientId;
-
     @Value("${kakao.redirect-uri}")
     private String kakaoRedirectUri;
-
     @Value("${kakao.client-secret:}")
     private String kakaoClientSecret;
+
+    @Value("${google.client-id}")
+    private String googleClientId;
+    @Value("${google.client-secret}")
+    private String googleClientSecret;
+    @Value("${google.redirect-uri}")
+    private String googleRedirectUri;
 
     public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
                            EntityManager entityManager, ProviderRepository providerRepository) {
@@ -176,7 +181,7 @@ public class AuthServiceImpl implements AuthService {
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\\p{P}\\p{S}])[^\\s]{8,16}$");
 
-
+    /* 카카오 */
     @Override
     public String getKakaoLoginUrl() {
         return "https://kauth.kakao.com/oauth/authorize"
@@ -220,7 +225,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public KakaoUserInfo getKakaoUserInfo(String accessToken) {
+    public OAuthUserInfo getKakaoUserInfo(String accessToken) {
 
         Map<String, Object> response = RestClient.create()
                 .get()
@@ -231,11 +236,7 @@ public class AuthServiceImpl implements AuthService {
                 .onStatus(
                         HttpStatusCode::isError,
                         (request, responseBody) -> {
-                            throw new BusinessException(
-                                    AuthErrorCode.KAKAO_USER_INFO_REQUEST_FAILED
-                            );
-                        }
-                )
+                            throw new BusinessException(AuthErrorCode.KAKAO_USER_INFO_REQUEST_FAILED);})
                 .body(new ParameterizedTypeReference<Map<String, Object>>() {});
 
         if (response == null || response.get("id") == null) {
@@ -250,18 +251,18 @@ public class AuthServiceImpl implements AuthService {
         String email = kakaoAccount.get("email") instanceof String value
                 ? value : null;
 
-        return new KakaoUserInfo(providerId, email);
+        return new OAuthUserInfo(providerId, email);
     }
 
 
     @Override
     @Transactional
-    public KakaoLoginRes kakaoLogin(String code) {
+    public OAuthLoginRes kakaoLogin(String code) {
         String kakaoAccessToken = getKakaoAccessToken(code);
 
-        KakaoUserInfo kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken);
-        String providerId = kakaoUserInfo.providerId();
-        String email = kakaoUserInfo.email();
+        OAuthUserInfo oAuthUserInfo = getKakaoUserInfo(kakaoAccessToken);
+        String providerId = oAuthUserInfo.providerId();
+        String email = oAuthUserInfo.email();
 
         // 기존 카카오 회원 조회
         Provider provider = providerRepository
@@ -309,9 +310,141 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
 
         // 결과 반환
-        return new KakaoLoginRes(
+        return new OAuthLoginRes(
                 oAuthNextStep, oAuthNextStep == OAuthNextStep.SIGN_UP ? email : null,
                 new TokenRes(accessToken, refreshToken)
+        );
+    }
+
+    /* 구글 */
+    @Override
+    public String getGoogleLoginUrl() {
+        return "https://accounts.google.com/o/oauth2/v2/auth"
+                + "?client_id=" + googleClientId
+                + "&redirect_uri=" + URLEncoder.encode(googleRedirectUri, StandardCharsets.UTF_8)
+                + "&response_type=code"
+                + "&scope=" + URLEncoder.encode("openid email profile", StandardCharsets.UTF_8)
+                + "&access_type=offline";
+    }
+
+    @Override
+    public String getGoogleAccessToken(String code) {
+
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        form.add("grant_type", "authorization_code");
+        form.add("client_id", googleClientId);
+        form.add("client_secret", googleClientSecret);
+        form.add("redirect_uri", googleRedirectUri);
+        form.add("code", code);
+
+        Map<String, Object> response = RestClient.create()
+                .post()
+                .uri("https://oauth2.googleapis.com/token")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(form)
+                .retrieve()
+                .onStatus(
+                        HttpStatusCode::isError, (request, responseBody) -> {
+                            throw new BusinessException(AuthErrorCode.GOOGLE_TOKEN_REQUEST_FAILED);})
+                .body(new ParameterizedTypeReference<Map<String, Object>>() {});
+
+        if (response == null || !(response.get("access_token") instanceof String accessToken)) {
+            throw new BusinessException(AuthErrorCode.GOOGLE_TOKEN_REQUEST_FAILED);
+        }
+
+        return accessToken;
+    }
+
+    @Override
+    public OAuthUserInfo getGoogleUserInfo(String accessToken) {
+
+        Map<String, Object> response = RestClient.create()
+                .get()
+                .uri("https://openidconnect.googleapis.com/v1/userinfo")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .onStatus(
+                        HttpStatusCode::isError, (request, responseBody) -> {
+                            throw new BusinessException(AuthErrorCode.GOOGLE_USER_INFO_REQUEST_FAILED);})
+                .body(new ParameterizedTypeReference<Map<String, Object>>() {});
+
+        if (response == null || !(response.get("sub") instanceof String providerId)) {
+            throw new BusinessException(AuthErrorCode.GOOGLE_USER_INFO_REQUEST_FAILED);
+        }
+
+        String email = response.get("email") instanceof String value
+                ? value : null;
+
+        if (email == null || email.isBlank()
+                || !Boolean.TRUE.equals(response.get("email_verified"))) {
+            throw new BusinessException(AuthErrorCode.GOOGLE_EMAIL_NOT_PROVIDED);
+        }
+
+        return new OAuthUserInfo(providerId, email);
+    }
+
+    @Override
+    @Transactional
+    public OAuthLoginRes googleLogin(String code) {
+
+        String googleAccessToken = getGoogleAccessToken(code);
+        OAuthUserInfo googleUserInfo = getGoogleUserInfo(googleAccessToken);
+
+        String providerId = googleUserInfo.providerId();
+        String email = googleUserInfo.email();
+
+        // 기존 구글 회원 조회
+        Provider provider = providerRepository
+                .findByProviderAndProviderId(AuthProvider.GOOGLE.name(), providerId)
+                .orElse(null);
+
+        User user;
+        OAuthNextStep oAuthNextStep;
+
+        if (provider != null) {
+
+            // 기존 회원
+            user = provider.getUser();
+            oAuthNextStep = OAuthNextStep.LOGIN;
+
+        } else {
+
+            // 신규 회원
+            if (email == null || email.isBlank()) {
+                throw new BusinessException(AuthErrorCode.GOOGLE_EMAIL_NOT_PROVIDED);
+            }
+
+            // 이메일 중복 확인
+            if (userRepository.existsByEmail(email)) {
+                throw new BusinessException(AuthErrorCode.EMAIL_ALREADY_EXIST);
+            }
+
+            user = User.builder()
+                    .email(email)
+                    .build();
+            userRepository.save(user);
+
+            Provider newProvider = Provider.builder()
+                    .provider(AuthProvider.GOOGLE.name())
+                    .providerId(providerId)
+                    .user(user)
+                    .build();
+            providerRepository.save(newProvider);
+
+            oAuthNextStep = OAuthNextStep.SIGN_UP;
+        }
+
+        // 행가래 JWT 발급
+        String accessToken = jwtTokenProvider.createAccessToken(user, AuthProvider.GOOGLE);
+        String refreshToken = jwtTokenProvider.createRefreshToken(user, AuthProvider.GOOGLE);
+
+        user.updateRefreshToken(refreshToken);
+        userRepository.save(user);
+
+        // 로그인 결과 반환
+        return new OAuthLoginRes(
+                oAuthNextStep, oAuthNextStep == OAuthNextStep.SIGN_UP ? email : null, new TokenRes(accessToken, refreshToken)
         );
     }
 }

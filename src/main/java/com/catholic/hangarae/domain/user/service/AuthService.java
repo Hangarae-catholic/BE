@@ -1,8 +1,8 @@
 package com.catholic.hangarae.domain.user.service;
 
 import com.catholic.hangarae.domain.user.dto.request.AuthRequest;
-import com.catholic.hangarae.domain.user.dto.response.KakaoLoginRes;
-import com.catholic.hangarae.domain.user.dto.response.KakaoUserInfo;
+import com.catholic.hangarae.domain.user.dto.response.OAuthLoginRes;
+import com.catholic.hangarae.domain.user.dto.response.OAuthUserInfo;
 import com.catholic.hangarae.domain.user.dto.response.TokenRes;
 
 public interface AuthService {
@@ -13,7 +13,11 @@ public interface AuthService {
 
     String getKakaoLoginUrl();
     String getKakaoAccessToken(String code);
-    KakaoUserInfo getKakaoUserInfo(String accessToken);
-    KakaoLoginRes kakaoLogin(String code);
+    OAuthUserInfo getKakaoUserInfo(String accessToken);
+    OAuthLoginRes kakaoLogin(String code);
 
+    String getGoogleLoginUrl();
+    String getGoogleAccessToken(String code);
+    OAuthUserInfo getGoogleUserInfo(String accessToken);
+    OAuthLoginRes googleLogin(String code);
 }
