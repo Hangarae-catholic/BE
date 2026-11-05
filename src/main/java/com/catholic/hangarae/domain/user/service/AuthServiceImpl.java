@@ -1,6 +1,9 @@
 package com.catholic.hangarae.domain.user.service;
 
 import com.catholic.hangarae.domain.user.dto.request.AuthRequest;
+import com.catholic.hangarae.domain.user.dto.request.FindIdReq;
+import com.catholic.hangarae.domain.user.dto.request.PasswordResetReq;
+import com.catholic.hangarae.domain.user.dto.response.FindIdRes;
 import com.catholic.hangarae.domain.user.dto.response.OAuthLoginRes;
 import com.catholic.hangarae.domain.user.dto.response.OAuthUserInfo;
 import com.catholic.hangarae.domain.user.dto.response.TokenRes;
@@ -10,6 +13,7 @@ import com.catholic.hangarae.domain.user.repository.ProviderRepository;
 import com.catholic.hangarae.domain.user.repository.UserRepository;
 import com.catholic.hangarae.domain.user.vo.AuthProvider;
 import com.catholic.hangarae.domain.user.vo.OAuthNextStep;
+import com.catholic.hangarae.domain.user.vo.VerificationType;
 import com.catholic.hangarae.global.apiPayLoad.error.AuthErrorCode;
 import com.catholic.hangarae.global.apiPayLoad.error.UserErrorCode;
 import com.catholic.hangarae.global.apiPayLoad.exception.BusinessException;
@@ -39,6 +43,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final EntityManager entityManager;
     private final ProviderRepository providerRepository;
+    private final EmailVerificationService emailVerificationService;
 
     @Value("${kakao.client-id}")
     private String kakaoClientId;
@@ -55,17 +60,19 @@ public class AuthServiceImpl implements AuthService {
     private String googleRedirectUri;
 
     public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
-                           EntityManager entityManager, ProviderRepository providerRepository) {
+                           EntityManager entityManager, ProviderRepository providerRepository,
+                           EmailVerificationService emailVerificationService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.entityManager = entityManager;
         this.providerRepository = providerRepository;
+        this.emailVerificationService = emailVerificationService;
     }
 
     @Override
     @Transactional
-    public void signUp(AuthRequest.SignUpReq request) {
+    public TokenRes signUp(AuthRequest.SignUpReq request) {
         validateSignUpRequest(request);
 
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -75,21 +82,136 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByLoginId(request.getLoginId())) {
             throw new BusinessException(AuthErrorCode.LOGIN_ID_ALREADY_EXIST);
         }
-        if (userRepository.existsByNickname(request.getNickname())) {
-            throw new BusinessException(AuthErrorCode.NICKNAME_ALREADY_EXIST);
-        }
+
+        // 이메일 인증을 마쳤는지 확인
+        emailVerificationService.checkVerified(request.getEmail(), request.getCode(), VerificationType.JOIN);
 
         String encodedPassword=passwordEncoder.encode(request.getPassword());
 
         User user=User.createLocalUser(
                 request.getLoginId(),
                 request.getName(),
-                request.getNickname(),
                 request.getEmail(),
                 encodedPassword
         );
 
         userRepository.save(user);
+        emailVerificationService.delete(request.getEmail(), VerificationType.JOIN);
+
+        // 가입 후 바로 프로필을 생성하도록 토큰 발급
+        return issueTokens(user, AuthProvider.LOCAL);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void checkLoginId(String loginId) {
+        if (!LOGIN_ID_PATTERN.matcher(loginId).matches()) {
+            throw new BusinessException(AuthErrorCode.INVALID_LOGIN_ID_FORMAT);
+        }
+        if (userRepository.existsByLoginId(loginId)) {
+            throw new BusinessException(AuthErrorCode.LOGIN_ID_ALREADY_EXIST);
+        }
+    }
+
+    @Override
+    @Transactional
+    public TokenRes reissue(String refreshToken) {
+        // 리프레시 토큰인지 확인
+        jwtTokenProvider.validateRefreshToken(refreshToken);
+
+        // 마지막으로 발급한 토큰만 허용, 로그아웃하면 저장값이 비어 재발급 불가
+        User user = userRepository.findById(jwtTokenProvider.getUserIdFromToken(refreshToken))
+                .orElseThrow(() -> new BusinessException(AuthErrorCode.JWT_INVALID_TOKEN));
+        if (!refreshToken.equals(user.getRefreshToken())) {
+            throw new BusinessException(AuthErrorCode.JWT_INVALID_TOKEN);
+        }
+
+        return issueTokens(user, jwtTokenProvider.getAuthProviderFromToken("Bearer " + refreshToken));
+    }
+
+    @Override
+    public void sendJoinCode(String email) {
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            throw new BusinessException(AuthErrorCode.INVAILD_EMAIL_FORMAT);
+        }
+        if (userRepository.existsByEmail(email)) {
+            throw new BusinessException(AuthErrorCode.EMAIL_ALREADY_EXIST);
+        }
+        emailVerificationService.sendCode(email, VerificationType.JOIN);
+    }
+
+    @Override
+    public void verifyJoinCode(String email, String code) {
+        emailVerificationService.verifyCode(email, code, VerificationType.JOIN);
+    }
+
+    @Override
+    public void sendFindIdCode(String name, String email) {
+        // 일치하는 계정이 없어도 같은 응답을 주어 가입 여부를 노출하지 않음
+        if (userRepository.findFirstByNameAndEmailAndLoginIdIsNotNull(name, email).isPresent()) {
+            emailVerificationService.sendCode(email, VerificationType.FIND_ID);
+        }
+    }
+
+    @Override
+    public void verifyFindIdCode(String email, String code) {
+        emailVerificationService.verifyCode(email, code, VerificationType.FIND_ID);
+    }
+
+    @Override
+    @Transactional
+    public FindIdRes findId(FindIdReq request) {
+        emailVerificationService.checkVerified(request.email(), request.code(), VerificationType.FIND_ID);
+
+        User user = userRepository.findFirstByNameAndEmailAndLoginIdIsNotNull(request.name(), request.email())
+                .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+
+        emailVerificationService.delete(request.email(), VerificationType.FIND_ID);
+        return new FindIdRes(user.getLoginId());
+    }
+
+    @Override
+    public void sendPasswordResetCode(String loginId, String email) {
+        // 일치하는 계정이 없어도 같은 응답을 주어 가입 여부를 노출하지 않음
+        User user = userRepository.findByLoginId(loginId).orElse(null);
+        if (user != null && user.getEmail().equals(email)) {
+            emailVerificationService.sendCode(email, VerificationType.PASSWORD_RESET);
+        }
+    }
+
+    @Override
+    public void verifyPasswordResetCode(String email, String code) {
+        emailVerificationService.verifyCode(email, code, VerificationType.PASSWORD_RESET);
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(PasswordResetReq request) {
+        if (!PASSWORD_PATTERN.matcher(request.newPassword()).matches()) {
+            throw new BusinessException(AuthErrorCode.INVALID_PASSWORD_FORMAT);
+        }
+        if (!request.newPassword().equals(request.confirmPassword())) {
+            throw new BusinessException(AuthErrorCode.CONFIRM_PASSWORD_MISMATCH);
+        }
+
+        emailVerificationService.checkVerified(request.email(), request.code(), VerificationType.PASSWORD_RESET);
+
+        User user = userRepository.findByLoginId(request.loginId())
+                .filter(found -> found.getEmail().equals(request.email()))
+                .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+
+        // 로그인 제한을 풀고 기존 로그인 세션 무효화
+        user.updatePassword(passwordEncoder.encode(request.newPassword()));
+        user.updateRefreshToken(null);
+
+        emailVerificationService.delete(request.email(), VerificationType.PASSWORD_RESET);
+    }
+
+    private TokenRes issueTokens(User user, AuthProvider authProvider) {
+        String accessToken = jwtTokenProvider.createAccessToken(user, authProvider);
+        String refreshToken = jwtTokenProvider.createRefreshToken(user, authProvider);
+        user.updateRefreshToken(refreshToken);
+        return new TokenRes(accessToken, refreshToken);
     }
 
     @Override
@@ -152,10 +274,6 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(AuthErrorCode.INVALID_LOGIN_ID_FORMAT);
         }
 
-        if (!NICKNAME_PATTERN.matcher(request.getNickname()).matches()) {
-            throw new BusinessException(AuthErrorCode.INVALID_NICKNAME_FORMAT);
-        }
-
         if (!PASSWORD_PATTERN.matcher(request.getPassword()).matches()) {
             throw new BusinessException(AuthErrorCode.INVALID_PASSWORD_FORMAT);
         }
@@ -174,9 +292,6 @@ public class AuthServiceImpl implements AuthService {
 
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
-
-    private static final Pattern NICKNAME_PATTERN =
-            Pattern.compile("^[\\p{L}\\p{N}]{6,255}$");
 
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\\p{P}\\p{S}])[^\\s]{8,16}$");
