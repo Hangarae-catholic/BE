@@ -39,13 +39,6 @@ public class AuthController {
                 .body(Response.ok(UserResultCode.USER_SIGNUP_OK, response));
     }
 
-    @GetMapping("/login-id/check")
-    @Operation(summary = "아이디 중복 확인")
-    public Response<Void> checkLoginId(@RequestParam String loginId) {
-        authService.checkLoginId(loginId);
-        return Response.ok(UserResultCode.USER_LOGIN_ID_CHECK_OK, null);
-    }
-
     @PostMapping("/reissue")
     @Operation(summary = "토큰 재발급", description = "리프레시 토큰으로 액세스 토큰과 리프레시 토큰을 새로 발급합니다.")
     public Response<TokenRes> reissue(@RequestBody @Valid ReissueReq request) {
@@ -87,9 +80,9 @@ public class AuthController {
     }
 
     @PostMapping("/password-reset/send-code")
-    @Operation(summary = "비밀번호 재설정 인증번호 발송", description = "아이디와 이메일이 일치하는 계정에만 발송하며, 응답은 항상 같습니다.")
+    @Operation(summary = "비밀번호 재설정 인증번호 발송", description = "자체 가입 계정에만 발송하며, 응답은 항상 같습니다.")
     public Response<Void> sendPasswordResetCode(@RequestBody @Valid PasswordResetSendReq request) {
-        authService.sendPasswordResetCode(request.loginId(), request.email());
+        authService.sendPasswordResetCode(request.email());
         return Response.ok(UserResultCode.USER_VERIFICATION_CODE_SENT, null);
     }
 

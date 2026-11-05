@@ -19,7 +19,6 @@ public enum UserResultCode implements ResultCode {
     USER_GOOGLE_SIGNUP_OK(HttpStatus.CREATED, "AUTH007", "구글 회원가입 성공"),
     USER_GOOGLE_LOGIN_OK(HttpStatus.OK, "AUTH008", "구글 로그인 성공"),
 
-    USER_LOGIN_ID_CHECK_OK(HttpStatus.OK, "AUTH009", "사용 가능한 아이디입니다."),
     USER_VERIFICATION_CODE_SENT(HttpStatus.OK, "AUTH010", "인증번호 발송 성공"),
     USER_EMAIL_VERIFIED(HttpStatus.OK, "AUTH011", "인증되었습니다."),
     USER_TOKEN_REISSUE_OK(HttpStatus.OK, "AUTH012", "토큰 재발급 성공"),

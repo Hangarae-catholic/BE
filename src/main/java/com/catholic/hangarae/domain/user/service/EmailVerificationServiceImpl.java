@@ -94,19 +94,32 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         verification.verify(now);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public void checkVerified(String email, VerificationType type) {
+        getVerified(email, type);
+    }
+
     // 인증을 마친 본인만 다음 단계를 진행하도록 인증번호까지 함께 확인
     @Override
     @Transactional(readOnly = true)
     public void checkVerified(String email, String code, VerificationType type) {
+        if (!getVerified(email, type).getCode().equals(code)) {
+            throw new BusinessException(MailErrorCode.EMAIL_NOT_VERIFIED);
+        }
+    }
+
+    private EmailVerification getVerified(String email, VerificationType type) {
         EmailVerification verification = emailVerificationRepository.findByEmailAndType(email, type)
                 .orElseThrow(() -> new BusinessException(MailErrorCode.EMAIL_NOT_VERIFIED));
 
         if (verification.isExpired(LocalDateTime.now())) {
             throw new BusinessException(MailErrorCode.VERIFICATION_CODE_EXPIRED);
         }
-        if (!verification.isVerified() || !verification.getCode().equals(code)) {
+        if (!verification.isVerified()) {
             throw new BusinessException(MailErrorCode.EMAIL_NOT_VERIFIED);
         }
+        return verification;
     }
 
     @Override

@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable) // http basic 끄기
                 .authorizeHttpRequests(auth -> {
                     auth
-                            .requestMatchers("/", "/api/auth/sign-up", "/api/auth/login", "/api/auth/reissue", "/api/auth/login-id/check").permitAll() // 인증 없이 접근 허용
+                            .requestMatchers("/", "/api/auth/sign-up", "/api/auth/login", "/api/auth/reissue").permitAll() // 인증 없이 접근 허용
                             .requestMatchers("/api/auth/verify-code/**", "/api/auth/find-id/**", "/api/auth/password-reset/**").permitAll() // 이메일 인증, 계정 찾기
                             .requestMatchers("/actuator/health", "/actuator/health/**").permitAll() // 배포 상태 확인
                             .requestMatchers("/index.html", "/static/**", "/favicon.ico").permitAll() // 정적 파일 허용

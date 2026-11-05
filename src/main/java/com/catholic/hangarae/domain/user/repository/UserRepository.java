@@ -21,9 +21,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 소셜 계정은 아이디가 없어 아이디 찾기 대상에서 제외
     Optional<User> findFirstByNameAndEmailAndLoginIdIsNotNull(String name, String email);
+    Optional<User> findFirstByEmailAndLoginIdIsNotNull(String email);
 
     boolean existsByEmail(String email);
-    boolean existsByLoginId(String loginId);
     boolean existsByNicknameAndIdNot(String nickname, Long userId);
 
 }

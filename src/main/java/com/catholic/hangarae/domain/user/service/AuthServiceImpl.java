@@ -75,42 +75,29 @@ public class AuthServiceImpl implements AuthService {
     public TokenRes signUp(AuthRequest.SignUpReq request) {
         validateSignUpRequest(request);
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        // 이메일을 로그인 아이디로 사용
+        String email = request.getLoginId();
+        if (userRepository.existsByEmail(email)) {
             throw new BusinessException(AuthErrorCode.EMAIL_ALREADY_EXIST);
         }
 
-        if (userRepository.existsByLoginId(request.getLoginId())) {
-            throw new BusinessException(AuthErrorCode.LOGIN_ID_ALREADY_EXIST);
-        }
-
         // 이메일 인증을 마쳤는지 확인
-        emailVerificationService.checkVerified(request.getEmail(), request.getCode(), VerificationType.JOIN);
+        emailVerificationService.checkVerified(email, VerificationType.JOIN);
 
         String encodedPassword=passwordEncoder.encode(request.getPassword());
 
         User user=User.createLocalUser(
-                request.getLoginId(),
+                email,
                 request.getName(),
-                request.getEmail(),
+                email,
                 encodedPassword
         );
 
         userRepository.save(user);
-        emailVerificationService.delete(request.getEmail(), VerificationType.JOIN);
+        emailVerificationService.delete(email, VerificationType.JOIN);
 
         // 가입 후 바로 프로필을 생성하도록 토큰 발급
         return issueTokens(user, AuthProvider.LOCAL);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public void checkLoginId(String loginId) {
-        if (!LOGIN_ID_PATTERN.matcher(loginId).matches()) {
-            throw new BusinessException(AuthErrorCode.INVALID_LOGIN_ID_FORMAT);
-        }
-        if (userRepository.existsByLoginId(loginId)) {
-            throw new BusinessException(AuthErrorCode.LOGIN_ID_ALREADY_EXIST);
-        }
     }
 
     @Override
@@ -171,10 +158,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void sendPasswordResetCode(String loginId, String email) {
+    public void sendPasswordResetCode(String email) {
         // 일치하는 계정이 없어도 같은 응답을 주어 가입 여부를 노출하지 않음
-        User user = userRepository.findByLoginId(loginId).orElse(null);
-        if (user != null && user.getEmail().equals(email)) {
+        if (userRepository.findFirstByEmailAndLoginIdIsNotNull(email).isPresent()) {
             emailVerificationService.sendCode(email, VerificationType.PASSWORD_RESET);
         }
     }
@@ -196,8 +182,7 @@ public class AuthServiceImpl implements AuthService {
 
         emailVerificationService.checkVerified(request.email(), request.code(), VerificationType.PASSWORD_RESET);
 
-        User user = userRepository.findByLoginId(request.loginId())
-                .filter(found -> found.getEmail().equals(request.email()))
+        User user = userRepository.findFirstByEmailAndLoginIdIsNotNull(request.email())
                 .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
         // 로그인 제한을 풀고 기존 로그인 세션 무효화
@@ -270,10 +255,6 @@ public class AuthServiceImpl implements AuthService {
 
     private void validateSignUpRequest(AuthRequest.SignUpReq request) {
 
-        if (!LOGIN_ID_PATTERN.matcher(request.getLoginId()).matches()) {
-            throw new BusinessException(AuthErrorCode.INVALID_LOGIN_ID_FORMAT);
-        }
-
         if (!PASSWORD_PATTERN.matcher(request.getPassword()).matches()) {
             throw new BusinessException(AuthErrorCode.INVALID_PASSWORD_FORMAT);
         }
@@ -282,13 +263,10 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(AuthErrorCode.CONFIRM_PASSWORD_MISMATCH);
         }
 
-        if (!EMAIL_PATTERN.matcher(request.getEmail()).matches()) {
+        if (!EMAIL_PATTERN.matcher(request.getLoginId()).matches()) {
             throw new BusinessException(AuthErrorCode.INVAILD_EMAIL_FORMAT);
         }
     }
-
-    private static final Pattern LOGIN_ID_PATTERN =
-            Pattern.compile("^[A-Za-z0-9]{6,255}$");
 
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");

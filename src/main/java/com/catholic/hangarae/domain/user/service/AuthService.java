@@ -10,7 +10,6 @@ import com.catholic.hangarae.domain.user.dto.response.TokenRes;
 
 public interface AuthService {
     TokenRes signUp(AuthRequest.SignUpReq request);
-    void checkLoginId(String loginId);
     TokenRes reissue(String refreshToken);
 
     void sendJoinCode(String email);
@@ -20,7 +19,7 @@ public interface AuthService {
     void verifyFindIdCode(String email, String code);
     FindIdRes findId(FindIdReq request);
 
-    void sendPasswordResetCode(String loginId, String email);
+    void sendPasswordResetCode(String email);
     void verifyPasswordResetCode(String email, String code);
     void resetPassword(PasswordResetReq request);
 
