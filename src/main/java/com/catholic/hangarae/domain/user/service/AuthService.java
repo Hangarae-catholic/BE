@@ -3,6 +3,7 @@ package com.catholic.hangarae.domain.user.service;
 import com.catholic.hangarae.domain.user.dto.request.AuthRequest;
 import com.catholic.hangarae.domain.user.dto.request.FindIdReq;
 import com.catholic.hangarae.domain.user.dto.request.PasswordResetReq;
+import com.catholic.hangarae.domain.user.dto.request.VerifyCodeReq;
 import com.catholic.hangarae.domain.user.dto.response.FindIdRes;
 import com.catholic.hangarae.domain.user.dto.response.OAuthLoginRes;
 import com.catholic.hangarae.domain.user.dto.response.OAuthUserInfo;
@@ -13,14 +14,12 @@ public interface AuthService {
     TokenRes reissue(String refreshToken);
 
     void sendJoinCode(String email);
-    void verifyJoinCode(String email, String code);
+    void verifyCode(VerifyCodeReq request);
 
     void sendFindIdCode(String name, String email);
-    void verifyFindIdCode(String email, String code);
     FindIdRes findId(FindIdReq request);
 
     void sendPasswordResetCode(String email);
-    void verifyPasswordResetCode(String email, String code);
     void resetPassword(PasswordResetReq request);
 
     TokenRes login(AuthRequest.LoginReq request);

@@ -53,9 +53,9 @@ public class AuthController {
     }
 
     @PostMapping("/verify-code/confirm")
-    @Operation(summary = "회원가입 인증번호 확인")
-    public Response<Void> verifyJoinCode(@RequestBody @Valid VerifyCodeReq request) {
-        authService.verifyJoinCode(request.email(), request.code());
+    @Operation(summary = "인증번호 확인", description = "enum 타입만 바꿔서 넣으면 됩니다.")
+    public Response<Void> verifyCode(@RequestBody @Valid VerifyCodeReq request) {
+        authService.verifyCode(request);
         return Response.ok(UserResultCode.USER_EMAIL_VERIFIED, null);
     }
 
@@ -64,13 +64,6 @@ public class AuthController {
     public Response<Void> sendFindIdCode(@RequestBody @Valid FindIdSendReq request) {
         authService.sendFindIdCode(request.name(), request.email());
         return Response.ok(UserResultCode.USER_VERIFICATION_CODE_SENT, null);
-    }
-
-    @PostMapping("/find-id/verify-code")
-    @Operation(summary = "아이디 찾기 인증번호 확인")
-    public Response<Void> verifyFindIdCode(@RequestBody @Valid VerifyCodeReq request) {
-        authService.verifyFindIdCode(request.email(), request.code());
-        return Response.ok(UserResultCode.USER_EMAIL_VERIFIED, null);
     }
 
     @PostMapping("/find-id")
@@ -84,13 +77,6 @@ public class AuthController {
     public Response<Void> sendPasswordResetCode(@RequestBody @Valid PasswordResetSendReq request) {
         authService.sendPasswordResetCode(request.email());
         return Response.ok(UserResultCode.USER_VERIFICATION_CODE_SENT, null);
-    }
-
-    @PostMapping("/password-reset/verify-code")
-    @Operation(summary = "비밀번호 재설정 인증번호 확인")
-    public Response<Void> verifyPasswordResetCode(@RequestBody @Valid VerifyCodeReq request) {
-        authService.verifyPasswordResetCode(request.email(), request.code());
-        return Response.ok(UserResultCode.USER_EMAIL_VERIFIED, null);
     }
 
     @PostMapping("/password-reset")

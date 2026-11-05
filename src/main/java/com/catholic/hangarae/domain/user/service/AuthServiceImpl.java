@@ -3,6 +3,7 @@ package com.catholic.hangarae.domain.user.service;
 import com.catholic.hangarae.domain.user.dto.request.AuthRequest;
 import com.catholic.hangarae.domain.user.dto.request.FindIdReq;
 import com.catholic.hangarae.domain.user.dto.request.PasswordResetReq;
+import com.catholic.hangarae.domain.user.dto.request.VerifyCodeReq;
 import com.catholic.hangarae.domain.user.dto.response.FindIdRes;
 import com.catholic.hangarae.domain.user.dto.response.OAuthLoginRes;
 import com.catholic.hangarae.domain.user.dto.response.OAuthUserInfo;
@@ -128,8 +129,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void verifyJoinCode(String email, String code) {
-        emailVerificationService.verifyCode(email, code, VerificationType.JOIN);
+    public void verifyCode(VerifyCodeReq request) {
+        emailVerificationService.verifyCode(request.email(), request.code(), request.type());
     }
 
     @Override
@@ -138,11 +139,6 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.findFirstByNameAndEmailAndLoginIdIsNotNull(name, email).isPresent()) {
             emailVerificationService.sendCode(email, VerificationType.FIND_ID);
         }
-    }
-
-    @Override
-    public void verifyFindIdCode(String email, String code) {
-        emailVerificationService.verifyCode(email, code, VerificationType.FIND_ID);
     }
 
     @Override
@@ -163,11 +159,6 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.findFirstByEmailAndLoginIdIsNotNull(email).isPresent()) {
             emailVerificationService.sendCode(email, VerificationType.PASSWORD_RESET);
         }
-    }
-
-    @Override
-    public void verifyPasswordResetCode(String email, String code) {
-        emailVerificationService.verifyCode(email, code, VerificationType.PASSWORD_RESET);
     }
 
     @Override
