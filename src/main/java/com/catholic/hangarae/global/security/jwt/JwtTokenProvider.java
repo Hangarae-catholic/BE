@@ -166,6 +166,14 @@ public class JwtTokenProvider {
         }
     }
 
+    // 재발급용 리프레시 토큰 검증
+    public void validateRefreshToken(String token) {
+        Claims claims = parseClaims(token);
+        if (!"refresh".equals(claims.get("category", String.class))) {
+            throw new BusinessException(AuthErrorCode.JWT_INVALID_TOKEN);
+        }
+    }
+
     // 토큰 검증
     public boolean validateToken(String token) {
         try {

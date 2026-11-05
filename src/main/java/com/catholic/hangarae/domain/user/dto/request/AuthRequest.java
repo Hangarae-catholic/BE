@@ -16,10 +16,6 @@ public class AuthRequest {
         @NotBlank
         private String loginId;
         @NotBlank
-        private String nickname;
-        @NotBlank
-        private String email;
-        @NotBlank
         private String password;
         @NotBlank
         private String confirmPassword;

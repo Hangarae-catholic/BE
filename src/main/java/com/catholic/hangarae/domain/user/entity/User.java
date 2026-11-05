@@ -72,11 +72,10 @@ public class User extends BaseEntity {
         this.status = status;
     }
 
-    public static User createLocalUser(String loginId, String name, String nickname, String email, String password) {
+    public static User createLocalUser(String loginId, String name, String email, String password) {
         return User.builder()
                 .loginId(loginId)
                 .name(name)
-                .nickname(nickname)
                 .email(email)
                 .password(password)
                 .build();
