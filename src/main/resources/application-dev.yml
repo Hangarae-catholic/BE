@@ -19,6 +19,7 @@ kakao:
   client-secret: ${KAKAO_CLIENT_SECRET:}
   scope:
     - account_email
+    - profile_nickname
   authorization-grant-type: authorization_code
   redirect-uri: ${KAKAO_REDIRECT_URI}
   client-name: Kakao
@@ -27,4 +28,7 @@ kakao:
 google:
   client-id: ${GOOGLE_CLIENT_ID}
   client-secret: ${GOOGLE_CLIENT_SECRET}
+  scope:
+    - email
+    - profile
   redirect-uri: ${GOOGLE_REDIRECT_URI}

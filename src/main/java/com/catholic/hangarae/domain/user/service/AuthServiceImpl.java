@@ -251,7 +251,15 @@ public class AuthServiceImpl implements AuthService {
         String email = kakaoAccount.get("email") instanceof String value
                 ? value : null;
 
-        return new OAuthUserInfo(providerId, email);
+        Map<?, ?> profile =
+                kakaoAccount.get("profile") instanceof Map<?, ?> p
+                        ? p : Map.of();
+
+        String name =
+                profile.get("nickname") instanceof String value
+                        ? value : null;
+
+        return new OAuthUserInfo(providerId, email, name);
     }
 
 
@@ -263,6 +271,7 @@ public class AuthServiceImpl implements AuthService {
         OAuthUserInfo oAuthUserInfo = getKakaoUserInfo(kakaoAccessToken);
         String providerId = oAuthUserInfo.providerId();
         String email = oAuthUserInfo.email();
+        String name = oAuthUserInfo.name();
 
         // 기존 카카오 회원 조회
         Provider provider = providerRepository
@@ -290,6 +299,7 @@ public class AuthServiceImpl implements AuthService {
 
             user = User.builder()
                     .email(email)
+                    .name(name)
                     .build();
             userRepository.save(user);
 
@@ -311,7 +321,9 @@ public class AuthServiceImpl implements AuthService {
 
         // 결과 반환
         return new OAuthLoginRes(
-                oAuthNextStep, oAuthNextStep == OAuthNextStep.SIGN_UP ? email : null,
+                oAuthNextStep,
+                oAuthNextStep == OAuthNextStep.SIGN_UP ? email : null,
+                oAuthNextStep == OAuthNextStep.SIGN_UP ? name : null,
                 new TokenRes(accessToken, refreshToken)
         );
     }
@@ -381,7 +393,10 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(AuthErrorCode.GOOGLE_EMAIL_NOT_PROVIDED);
         }
 
-        return new OAuthUserInfo(providerId, email);
+        String name = response.get("name") instanceof String value
+                ? value : null;
+
+        return new OAuthUserInfo(providerId, email, name);
     }
 
     @Override
@@ -393,6 +408,7 @@ public class AuthServiceImpl implements AuthService {
 
         String providerId = googleUserInfo.providerId();
         String email = googleUserInfo.email();
+        String name = googleUserInfo.name();
 
         // 기존 구글 회원 조회
         Provider provider = providerRepository
@@ -422,6 +438,7 @@ public class AuthServiceImpl implements AuthService {
 
             user = User.builder()
                     .email(email)
+                    .name(name)
                     .build();
             userRepository.save(user);
 
@@ -444,7 +461,10 @@ public class AuthServiceImpl implements AuthService {
 
         // 로그인 결과 반환
         return new OAuthLoginRes(
-                oAuthNextStep, oAuthNextStep == OAuthNextStep.SIGN_UP ? email : null, new TokenRes(accessToken, refreshToken)
+                oAuthNextStep,
+                oAuthNextStep == OAuthNextStep.SIGN_UP ? email : null,
+                oAuthNextStep == OAuthNextStep.SIGN_UP ? name : null,
+                new TokenRes(accessToken, refreshToken)
         );
     }
 }

@@ -5,6 +5,7 @@ import com.catholic.hangarae.domain.user.vo.OAuthNextStep;
 public record OAuthLoginRes(
         OAuthNextStep nextStep,
         String email,
+        String name,
         TokenRes tokens
 ) {
 }
