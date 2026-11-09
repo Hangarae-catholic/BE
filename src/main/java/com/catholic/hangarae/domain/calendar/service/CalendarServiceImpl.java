@@ -61,6 +61,7 @@ public class CalendarServiceImpl implements CalendarService {
                     .endAt(notice.getEndAt())
                     .location(notice.getLocation())
                     .category(notice.getCategory())
+                    .scheduleType(notice.getScheduleType())
                     .division(notice.getDepartment() == null ? null : notice.getDepartment().getDivision())
                     .build();
             response.add(item);

@@ -3,6 +3,7 @@ package com.catholic.hangarae.domain.notice.entity;
 import com.catholic.hangarae.domain.user.entity.User;
 import com.catholic.hangarae.domain.department.entity.Department;
 import com.catholic.hangarae.domain.notice.vo.Location;
+import com.catholic.hangarae.domain.notice.vo.NoticeScheduleType;
 import com.catholic.hangarae.domain.notice.vo.NoticeType;
 import com.catholic.hangarae.domain.notice.vo.NoticeCategory;
 import com.catholic.hangarae.global.apiPayLoad.common.BaseEntity;
@@ -52,6 +53,10 @@ public class Notice extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private NoticeCategory category;
 
+    // 행사, 일정 구분
+    @Enumerated(EnumType.STRING)
+    private NoticeScheduleType scheduleType;
+
     // 관리자 승인 여부
     @Column(nullable = false)
     private boolean approved;
@@ -66,7 +71,7 @@ public class Notice extends BaseEntity {
     private User user;
 
     @Builder
-    public Notice(String name, String summary, LocalDateTime startAt, LocalDateTime endAt, String information, Location location, String responsible, String url, NoticeType type, NoticeCategory category, Department department, User user) {
+    public Notice(String name, String summary, LocalDateTime startAt, LocalDateTime endAt, String information, Location location, String responsible, String url, NoticeType type, NoticeCategory category, NoticeScheduleType scheduleType, Department department, User user) {
         this.name = name;
         this.summary = summary;
         this.startAt = startAt;
@@ -77,6 +82,7 @@ public class Notice extends BaseEntity {
         this.url = url;
         this.type = type;
         this.category = category;
+        this.scheduleType = scheduleType;
         this.department = department;
         this.user = user;
         this.approved = false;
@@ -84,5 +90,13 @@ public class Notice extends BaseEntity {
 
     public void approve() {
         this.approved = true;
+    }
+
+    // 구분 값이 없는 공지는 장소 유무로 판단
+    public NoticeScheduleType getScheduleType() {
+        if (scheduleType != null) {
+            return scheduleType;
+        }
+        return location != null ? NoticeScheduleType.EVENT : NoticeScheduleType.SCHEDULE;
     }
 }

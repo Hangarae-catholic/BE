@@ -3,6 +3,7 @@ package com.catholic.hangarae.domain.calendar.dto.response;
 import com.catholic.hangarae.domain.department.vo.Division;
 import com.catholic.hangarae.domain.notice.vo.Location;
 import com.catholic.hangarae.domain.notice.vo.NoticeCategory;
+import com.catholic.hangarae.domain.notice.vo.NoticeScheduleType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -21,6 +22,7 @@ public class CalendarResponse {
         private LocalDateTime endAt;
         private Location location;
         private NoticeCategory category;
+        private NoticeScheduleType scheduleType;
         private Division division;
     }
 }

@@ -1,6 +1,7 @@
 package com.catholic.hangarae.domain.crawl.dto.response;
 
 import com.catholic.hangarae.domain.notice.vo.Location;
+import com.catholic.hangarae.domain.notice.vo.NoticeScheduleType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,6 +17,7 @@ public class GeminiDescribeRes {
     private LocalDate startDate;
     private LocalDate endDate;
     private Location location;
+    private NoticeScheduleType scheduleType;
 
     // 주최기관, 본문에 없으면 작성자
     private String responsible;
