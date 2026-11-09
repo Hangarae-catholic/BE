@@ -12,7 +12,9 @@ import java.util.List;
 public interface NoticeService {
 
     List<NoticeListRes> getNotices(LocalDate date);
+    List<NoticeListRes> getRecommendedNotices(Long userId, int size);
     NoticeDetailRes getNotice(Long noticeId);
+    String getCalendarFile(Long noticeId);
 
     Long createNotice(Long userId, NoticeCreateReq req);
     Void deleteNotice(Long userId, Long NoticeId);

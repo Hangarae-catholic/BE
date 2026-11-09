@@ -1,8 +1,37 @@
 spring:
+  config:
+    import: classpath:school-notice.yml
   application:
     name: hangarae
   profiles:
     default: dev
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+
+storage:
+  endpoint: ${S3_ENDPOINT}
+  region: ${S3_REGION}
+  bucket: ${S3_BUCKET}
+  access-key: ${S3_ACCESS_KEY}
+  secret-key: ${S3_SECRET_KEY}
+  public-url: ${S3_PUBLIC_URL}
 
 jwt:
   secret: ${JWT_SECRET}
@@ -10,6 +39,9 @@ jwt:
   refresh-token-validity: 1209600000
 
 management:
+  health:
+    mail:
+      enabled: false # SMTP 장애로 컨테이너 헬스체크가 실패하지 않도록 제외
   endpoints:
     web:
       exposure:

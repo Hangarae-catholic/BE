@@ -4,6 +4,7 @@ import com.catholic.hangarae.domain.department.vo.DepartmentType;
 import com.catholic.hangarae.domain.department.vo.Division;
 import com.catholic.hangarae.domain.notice.vo.Location;
 import com.catholic.hangarae.domain.notice.vo.NoticeCategory;
+import com.catholic.hangarae.domain.notice.vo.NoticeScheduleType;
 import com.catholic.hangarae.domain.notice.vo.NoticeType;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class NoticeDetailRes {
     private String url;
     private NoticeType type;
     private NoticeCategory category;
+    private NoticeScheduleType scheduleType;
     private boolean approved;
     private Division division;
     private DepartmentType department;

@@ -14,8 +14,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,10 +38,26 @@ public class NoticeController {
         return Response.of(NoticeResultCode.NOTICE_LIST_OK, noticeService.getNotices(date));
     }
 
+    @GetMapping("/recommend")
+    @Operation(summary = "오늘의 추천 행사", description = "오늘 열리는 행사 중 관심 분야와 학과에 맞는 행사를 관심 분야 점수 순으로 조회")
+    public Response<List<NoticeListRes>> getRecommendedNotices(
+            @AuthUser Long userId, @RequestParam(defaultValue = "5") int size) {
+        return Response.of(NoticeResultCode.NOTICE_RECOMMEND_OK, noticeService.getRecommendedNotices(userId, size));
+    }
+
     @GetMapping("/{noticeId}")
     @Operation(summary = "행사 상세 조회")
     public Response<NoticeDetailRes> getNotice(@PathVariable Long noticeId) {
         return Response.of(NoticeResultCode.NOTICE_DETAIL_OK, noticeService.getNotice(noticeId));
+    }
+
+    @GetMapping("/{noticeId}/calendar-file")
+    @Operation(summary = "캘린더에 추가할 일정 파일", description = "기기 기본 캘린더에 추가할 수 있는 iCalendar(.ics) 파일을 내려받습니다.")
+    public ResponseEntity<byte[]> getCalendarFile(@PathVariable Long noticeId) {
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("text/calendar; charset=UTF-8"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"hangarae-" + noticeId + ".ics\"")
+                .body(noticeService.getCalendarFile(noticeId).getBytes(StandardCharsets.UTF_8));
     }
 
     @PostMapping

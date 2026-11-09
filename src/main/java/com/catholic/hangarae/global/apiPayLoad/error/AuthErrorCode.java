@@ -19,12 +19,16 @@ public enum AuthErrorCode implements ErrorCode {
     INVAILD_EMAIL_FORMAT(HttpStatus.BAD_REQUEST,"AUTH009","이메일 형식이 일치하지 않습니다."),
     EMAIL_ALREADY_EXIST(HttpStatus.BAD_REQUEST,"AUTH010","이미 존재하는 이메일입니다."),
     PASSWORD_UNMATCH_ERROR(HttpStatus.BAD_REQUEST,"AUTH011", "아이디, 비밀번호가 일치하지 않습니다."),
-    LOGIN_ID_ALREADY_EXIST(HttpStatus.BAD_REQUEST,"AUTH012", "이미 존재하는 아이디입니다."),
-    NICKNAME_ALREADY_EXIST(HttpStatus.BAD_REQUEST,"AUTH013", "사용 불가능한 닉네임입니다"),
-    INVALID_LOGIN_ID_FORMAT(HttpStatus.BAD_REQUEST,"AUTH014", "올바른 아이디 형식이 아닙니다"),
     JWT_CONFIGURATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"AUTH015", "JWT 설정이 올바르지 않습니다."),
-    INVALID_NICKNAME_FORMAT(HttpStatus.BAD_REQUEST,"AUTH016", "올바른 닉네임 형식이 아닙니다"),
     LOGIN_RESTRICTED(HttpStatus.TOO_MANY_REQUESTS,"AUTH017", "로그인 시도 횟수를 초과했습니다. 비밀번호를 재설정해 주세요."),
+
+    KAKAO_TOKEN_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "AUTH018", "카카오 토큰 발급에 실패했습니다."),
+    KAKAO_USER_INFO_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "AUTH019", "카카오 사용자 정보를 가져오지 못했습니다."),
+    KAKAO_EMAIL_NOT_PROVIDED(HttpStatus.BAD_REQUEST, "AUTH020", "카카오 계정에서 이메일을 제공받지 못했습니다."),
+
+    GOOGLE_TOKEN_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "AUTH021", "구글 토큰 발급에 실패했습니다."),
+    GOOGLE_USER_INFO_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "AUTH022", "구글 사용자 정보를 가져오지 못했습니다."),
+    GOOGLE_EMAIL_NOT_PROVIDED(HttpStatus.BAD_REQUEST, "AUTH023", "구글 계정에서 이메일을 제공받지 못했습니다."),
 
     ;
 

@@ -17,6 +17,7 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -45,9 +46,13 @@ public class CalendarServiceImpl implements CalendarService {
                 month.atDay(1).atStartOfDay(), month.plusMonths(1).atDay(1).atStartOfDay(),
                 NoticeType.SCHOOL, request.getDivisions(), request.getCategories(), userId);
 
-        // 캘린더 응답 생성
+        // 캘린더 응답 생성, 여러 학과 게시판에 올라온 같은 공지는 제목과 기간이 같으면 하나만 표시
         List<CalendarResponse.NoticeRes> response = new ArrayList<>();
+        Set<String> shown = new HashSet<>();
         for (Notice notice : notices) {
+            if (!shown.add(notice.getName() + "|" + notice.getStartAt() + "|" + notice.getEndAt())) {
+                continue;
+            }
             CalendarResponse.NoticeRes item = CalendarResponse.NoticeRes.builder()
                     .noticeId(notice.getId())
                     .name(notice.getName())
@@ -56,6 +61,7 @@ public class CalendarServiceImpl implements CalendarService {
                     .endAt(notice.getEndAt())
                     .location(notice.getLocation())
                     .category(notice.getCategory())
+                    .scheduleType(notice.getScheduleType())
                     .division(notice.getDepartment() == null ? null : notice.getDepartment().getDivision())
                     .build();
             response.add(item);

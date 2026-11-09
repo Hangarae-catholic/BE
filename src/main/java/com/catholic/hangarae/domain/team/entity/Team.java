@@ -40,10 +40,6 @@ public class Team extends BaseEntity {
     @Column(nullable = false, columnDefinition = "text")
     private String detail;
 
-    // 팀 연락 링크
-    @Column(nullable = false, length = 2048)
-    private String contactUrl;
-
     // 잔여 모집 인원
     @Column(nullable = false)
     private Integer remainingMember;
@@ -57,27 +53,25 @@ public class Team extends BaseEntity {
     private User user;
 
     @Builder
-    public Team(String title, LocalDateTime startAt, LocalDateTime endAt, Integer maxMember, TeamCategory category, String detail, String contactUrl, User user) {
+    public Team(String title, LocalDateTime startAt, LocalDateTime endAt, Integer maxMember, TeamCategory category, String detail, User user) {
         this.title = title;
         this.startAt = startAt;
         this.endAt = endAt;
         this.maxMember = maxMember;
         this.category = category;
         this.detail = detail;
-        this.contactUrl = contactUrl;
         this.remainingMember = maxMember;
         this.status = TeamStatus.RECRUITING;
         this.user = user;
     }
 
-    public void update(String title, LocalDateTime startAt, LocalDateTime endAt, Integer remainingMember, TeamCategory category, String detail, String contactUrl) {
+    public void update(String title, LocalDateTime startAt, LocalDateTime endAt, Integer remainingMember, TeamCategory category, String detail) {
         this.title = title;
         this.startAt = startAt;
         this.endAt = endAt;
         this.remainingMember = remainingMember;
         this.category = category;
         this.detail = detail;
-        this.contactUrl = contactUrl;
         this.status = (remainingMember == 0 ? TeamStatus.CLOSED : TeamStatus.RECRUITING);
     }
 

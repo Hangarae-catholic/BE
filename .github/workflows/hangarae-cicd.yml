@@ -89,11 +89,21 @@ jobs:
           HANGARAE_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/hangarae:sha-${{ github.sha }}
           PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
         run: |
           set -euo pipefail
           test -s docker-compose.yml
 
-          names=(DOCKERHUB_USERNAME DOCKERHUB_TOKEN HANGARAE_IMAGE PROD_DB_PASSWORD JWT_SECRET)
+          names=(DOCKERHUB_USERNAME DOCKERHUB_TOKEN HANGARAE_IMAGE PROD_DB_PASSWORD JWT_SECRET TYPESAFE_API_KEY GEMINI_API_KEY KAKAO_CLIENT_ID KAKAO_CLIENT_SECRET KAKAO_REDIRECT_URI GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET GOOGLE_REDIRECT_URI MAIL_USERNAME MAIL_PASSWORD)
           DEPLOY_PAYLOAD="$(
             {
               for name in "${names[@]}"; do

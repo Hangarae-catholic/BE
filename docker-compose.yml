@@ -9,6 +9,9 @@ services:
     ports:
       - "100.66.12.112:8081:8080"
 
+    env_file:
+      - ./storage.env
+
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PROD_DB_URL: jdbc:mysql://100.66.133.99:3306/hangarae
@@ -16,6 +19,20 @@ services:
       PROD_DB_USERNAME: hangarae_app
       PROD_DB_PASSWORD: ${PROD_DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+      TYPESAFE_API_KEY: ${TYPESAFE_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
+      KAKAO_REDIRECT_URI: ${KAKAO_REDIRECT_URI}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      SCHOOL_NOTICE_ENABLED: "true"
+      SCHOOL_NOTICE_RUN_ON_STARTUP: "true" # 백필 끝나면 false
+      JEV_ENABLED: "true"
+      GEMINI_ENABLED: "false" # 백필 끝나면 true
       JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=50.0 -XX:+ExitOnOutOfMemoryError"
       TZ: Asia/Seoul
 
