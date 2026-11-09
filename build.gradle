@@ -26,6 +26,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+	// MinIO
+	implementation 'software.amazon.awssdk:s3:2.31.50'
+
 	// 학교 공지 HTML 파싱
 	implementation 'org.jsoup:jsoup:1.23.2'
 
