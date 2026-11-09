@@ -9,6 +9,9 @@ services:
     ports:
       - "100.66.12.112:8081:8080"
 
+    env_file:
+      - ./storage.env
+
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PROD_DB_URL: jdbc:mysql://100.66.133.99:3306/hangarae
