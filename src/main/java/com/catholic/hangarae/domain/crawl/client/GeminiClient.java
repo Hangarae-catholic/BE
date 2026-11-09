@@ -4,6 +4,7 @@ import com.catholic.hangarae.domain.crawl.dto.request.GeminiDescribeReq;
 import com.catholic.hangarae.domain.crawl.dto.response.GeminiDescribeRes;
 import com.catholic.hangarae.domain.crawl.dto.response.SchoolNoticeRes;
 import com.catholic.hangarae.domain.notice.vo.Location;
+import com.catholic.hangarae.domain.notice.vo.NoticeScheduleType;
 import com.catholic.hangarae.global.apiPayLoad.error.CrawlErrorCode;
 import com.catholic.hangarae.global.apiPayLoad.exception.BusinessException;
 import com.catholic.hangarae.global.config.GeminiProperties;
@@ -123,12 +124,19 @@ public class GeminiClient {
                     .orElse(null);
         }
 
+        // 날짜가 있는 공지만 행사 또는 일정으로 구분
+        NoticeScheduleType noticeScheduleType = null;
+        if (startDate != null) {
+            noticeScheduleType = "EVENT".equals(scheduleType) ? NoticeScheduleType.EVENT : NoticeScheduleType.SCHEDULE;
+        }
+
         return GeminiDescribeRes.builder()
                 .summary(cut(summary, 255))
                 .information(information.isBlank() ? notice.getInformation() : information)
                 .startDate(startDate)
                 .endDate(endDate)
                 .location(location)
+                .scheduleType(noticeScheduleType)
                 .responsible(cut(responsible.isBlank() ? notice.getWriter() : responsible, 255))
                 .build();
     }

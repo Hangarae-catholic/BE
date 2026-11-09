@@ -71,7 +71,8 @@ public class CollectedNoticeServiceImpl implements CollectedNoticeService {
             builder.summary(description.getSummary())
                     .information(description.getInformation())
                     .responsible(description.getResponsible())
-                    .location(description.getLocation());
+                    .location(description.getLocation())
+                    .scheduleType(description.getScheduleType());
             if (description.getStartDate() != null) {
                 builder.startAt(description.getStartDate().atStartOfDay())
                         .endAt(description.getEndDate().atTime(LocalTime.of(23, 59, 59)));
