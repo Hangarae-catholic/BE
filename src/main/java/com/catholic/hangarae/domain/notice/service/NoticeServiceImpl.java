@@ -26,8 +26,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -154,12 +158,83 @@ public class NoticeServiceImpl implements NoticeService {
                 .url(notice.getUrl())
                 .type(notice.getType())
                 .category(notice.getCategory())
+                .scheduleType(notice.getScheduleType())
                 .approved(notice.isApproved())
                 .division(division)
                 .department(department)
                 .imageUrls(imageUrls)
                 .build();
         return response;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getCalendarFile(Long noticeId) {
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new BusinessException(NoticeErrorCode.NOTICE_NOT_FOUND));
+        if (notice.getStartAt() == null) {
+            throw new BusinessException(NoticeErrorCode.NOTICE_DATE_NOT_FOUND);
+        }
+
+        // 캘린더의 학교 공지는 날짜만 있어 종일 일정으로 생성, iCalendar 종료일은 다음 날로 표기
+        LocalDate start = notice.getStartAt().toLocalDate();
+        LocalDate end = notice.getEndAt() == null ? start : notice.getEndAt().toLocalDate();
+        if (end.isBefore(start)) {
+            end = start;
+        }
+
+        List<String> lines = new ArrayList<>();
+        lines.add("BEGIN:VCALENDAR");
+        lines.add("VERSION:2.0");
+        lines.add("PRODID:-//Hangarae//Calendar//KO");
+        lines.add("CALSCALE:GREGORIAN");
+        lines.add("BEGIN:VEVENT");
+        lines.add("UID:notice-" + notice.getId() + "@hangarae");
+        lines.add("DTSTAMP:" + DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'").format(LocalDateTime.now(ZoneOffset.UTC)));
+        lines.add("DTSTART;VALUE=DATE:" + DateTimeFormatter.BASIC_ISO_DATE.format(start));
+        lines.add("DTEND;VALUE=DATE:" + DateTimeFormatter.BASIC_ISO_DATE.format(end.plusDays(1)));
+        lines.add("SUMMARY:" + escapeCalendarText(notice.getName()));
+        if (notice.getSummary() != null) {
+            lines.add("DESCRIPTION:" + escapeCalendarText(notice.getSummary()));
+        }
+        if (notice.getUrl() != null) {
+            lines.add("URL:" + notice.getUrl().replaceAll("[\\r\\n]", ""));
+        }
+        lines.add("END:VEVENT");
+        lines.add("END:VCALENDAR");
+
+        StringBuilder file = new StringBuilder();
+        for (String line : lines) {
+            file.append(foldCalendarLine(line)).append("\r\n");
+        }
+        return file.toString();
+    }
+
+    // iCalendar 예약 문자 이스케이프
+    private String escapeCalendarText(String text) {
+        return text.replace("\\", "\\\\")
+                .replace(";", "\\;")
+                .replace(",", "\\,")
+                .replace("\r\n", "\n")
+                .replace("\r", "\n")
+                .replace("\n", "\\n");
+    }
+
+    // iCalendar는 한 줄 75바이트 제한, 한글이 잘리지 않게 문자 단위로 줄바꿈
+    private String foldCalendarLine(String line) {
+        StringBuilder folded = new StringBuilder();
+        int bytes = 0;
+        for (int codePoint : line.codePoints().toArray()) {
+            String character = new String(Character.toChars(codePoint));
+            int size = character.getBytes(StandardCharsets.UTF_8).length;
+            if (bytes + size > 75) {
+                folded.append("\r\n ");
+                bytes = 1;
+            }
+            folded.append(character);
+            bytes += size;
+        }
+        return folded.toString();
     }
 
     @Transactional
