@@ -29,9 +29,6 @@ public class Notice extends BaseEntity {
     @Column(length = 500)
     private String name;
 
-    // 행사 한줄 소개
-    private String summary;
-
     private LocalDateTime startAt;
 
     private LocalDateTime endAt;
@@ -71,9 +68,8 @@ public class Notice extends BaseEntity {
     private User user;
 
     @Builder
-    public Notice(String name, String summary, LocalDateTime startAt, LocalDateTime endAt, String information, Location location, String responsible, String url, NoticeType type, NoticeCategory category, NoticeScheduleType scheduleType, Department department, User user) {
+    public Notice(String name, LocalDateTime startAt, LocalDateTime endAt, String information, Location location, String responsible, String url, NoticeType type, NoticeCategory category, NoticeScheduleType scheduleType, Department department, User user) {
         this.name = name;
-        this.summary = summary;
         this.startAt = startAt;
         this.endAt = endAt;
         this.information = information;

@@ -56,7 +56,6 @@ public class CalendarServiceImpl implements CalendarService {
             CalendarResponse.NoticeRes item = CalendarResponse.NoticeRes.builder()
                     .noticeId(notice.getId())
                     .name(notice.getName())
-                    .summary(notice.getSummary())
                     .startAt(notice.getStartAt())
                     .endAt(notice.getEndAt())
                     .location(notice.getLocation())

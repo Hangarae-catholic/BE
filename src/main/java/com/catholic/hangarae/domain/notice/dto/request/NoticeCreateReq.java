@@ -32,9 +32,6 @@ public class NoticeCreateReq {
     private Location location;
 
     @NotBlank
-    private String summary;
-
-    @NotBlank
     private String information;
 
     @Size(max = 3)

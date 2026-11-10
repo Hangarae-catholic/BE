@@ -85,11 +85,6 @@ public class GeminiClient {
         }
         JsonNode result = parse(response);
 
-        // 요약이 비어 있으면 실패로 처리
-        String summary = result.path("summary").asString().strip();
-        if (summary.isBlank()) {
-            throw new BusinessException(CrawlErrorCode.INVALID_GEMINI_RESPONSE);
-        }
         String information = result.path("information").asString().strip();
         String responsible = result.path("responsible").asString().strip();
 
@@ -131,7 +126,6 @@ public class GeminiClient {
         }
 
         return GeminiDescribeRes.builder()
-                .summary(cut(summary, 255))
                 .information(information.isBlank() ? notice.getInformation() : information)
                 .startDate(startDate)
                 .endDate(endDate)
@@ -146,7 +140,6 @@ public class GeminiClient {
         BUILDINGS.forEach((location, name) -> buildings.append(location.name()).append('=').append(name).append(", "));
         return """
                 가톨릭대학교 성심교정 공지를 학생용 캘린더와 지도에 표시할 정보로 정리하세요.
-                - summary: 공지 내용을 한 문장으로 소개, 60자 이내
                 - information: 학생에게 필요한 내용(대상, 일정, 신청 방법, 문의처)을 500자 이내로 정리, 원문에 없는 내용은 쓰지 않음
                 - schedule_type: 공지의 주된 일정 종류
                   EVENT=특강, 설명회, 공연, 전시, 대회처럼 학생이 직접 참여하는 행사가 열리는 날짜나 기간
@@ -175,7 +168,6 @@ public class GeminiClient {
         List<String> locations = new ArrayList<>(List.of(NONE));
         BUILDINGS.keySet().forEach(location -> locations.add(location.name()));
         Map<String, Object> fields = new LinkedHashMap<>();
-        fields.put("summary", Map.of("type", "string"));
         fields.put("information", Map.of("type", "string"));
         fields.put("schedule_type", Map.of("type", "string", "enum", List.of("EVENT", "PERIOD", "DEADLINE", NONE)));
         fields.put("start_date", Map.of("type", "string"));

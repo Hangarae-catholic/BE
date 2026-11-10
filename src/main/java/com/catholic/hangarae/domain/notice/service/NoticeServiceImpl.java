@@ -75,7 +75,6 @@ public class NoticeServiceImpl implements NoticeService {
                     .startAt(notice.getStartAt())
                     .endAt(notice.getEndAt())
                     .location(notice.getLocation())
-                    .summary(notice.getSummary())
                     .approved(notice.isApproved())
                     .build();
             response.add(item);
@@ -114,7 +113,6 @@ public class NoticeServiceImpl implements NoticeService {
                     .startAt(notice.getStartAt())
                     .endAt(notice.getEndAt())
                     .location(notice.getLocation())
-                    .summary(notice.getSummary())
                     .approved(notice.isApproved())
                     .build();
             response.add(item);
@@ -149,7 +147,6 @@ public class NoticeServiceImpl implements NoticeService {
         NoticeDetailRes response = NoticeDetailRes.builder()
                 .noticeId(notice.getId())
                 .name(notice.getName())
-                .summary(notice.getSummary())
                 .startAt(notice.getStartAt())
                 .endAt(notice.getEndAt())
                 .location(notice.getLocation())
@@ -194,9 +191,6 @@ public class NoticeServiceImpl implements NoticeService {
         lines.add("DTSTART;VALUE=DATE:" + DateTimeFormatter.BASIC_ISO_DATE.format(start));
         lines.add("DTEND;VALUE=DATE:" + DateTimeFormatter.BASIC_ISO_DATE.format(end.plusDays(1)));
         lines.add("SUMMARY:" + escapeCalendarText(notice.getName()));
-        if (notice.getSummary() != null) {
-            lines.add("DESCRIPTION:" + escapeCalendarText(notice.getSummary()));
-        }
         if (notice.getUrl() != null) {
             lines.add("URL:" + notice.getUrl().replaceAll("[\\r\\n]", ""));
         }
@@ -251,7 +245,6 @@ public class NoticeServiceImpl implements NoticeService {
                 .startAt(req.getStartAt())
                 .endAt(req.getEndAt())
                 .location(req.getLocation())
-                .summary(req.getSummary())
                 .information(req.getInformation())
                 .type(NoticeType.PRIVATE)
                 .user(user)
