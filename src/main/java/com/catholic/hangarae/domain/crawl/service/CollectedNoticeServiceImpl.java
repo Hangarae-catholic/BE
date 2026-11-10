@@ -68,8 +68,7 @@ public class CollectedNoticeServiceImpl implements CollectedNoticeService {
                 .category(classification.getCategory())
                 .department(department);
         if (description != null) {
-            builder.summary(description.getSummary())
-                    .information(description.getInformation())
+            builder.information(description.getInformation())
                     .responsible(description.getResponsible())
                     .location(description.getLocation())
                     .scheduleType(description.getScheduleType());
