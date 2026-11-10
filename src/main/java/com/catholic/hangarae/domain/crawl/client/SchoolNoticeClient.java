@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -50,10 +51,13 @@ public class SchoolNoticeClient {
 
         // 목록형과 이미지형 게시판의 게시글 번호와 원문 링크, 고정 공지 중복은 제외
         Map<Long, String> articles = new LinkedHashMap<>();
+        Map<Long, LocalDate> publishedDates = new HashMap<>();
         for (Element link : board.select("a.b-title[href], .bn-list-img01 a[href*='articleNo=']")) {
             Matcher matcher = ARTICLE_ID.matcher(link.attr("href"));
             if (matcher.find()) {
-                articles.put(Long.valueOf(matcher.group(1)), link.absUrl("href"));
+                Long articleId = Long.valueOf(matcher.group(1));
+                articles.put(articleId, link.absUrl("href"));
+                publishedDates.put(articleId, listDate(link));
             }
         }
         if (articles.isEmpty() && board.selectFirst(".b-no-post") == null) {
@@ -73,6 +77,7 @@ public class SchoolNoticeClient {
         }
         return BoardPageRes.builder()
                 .articles(articles)
+                .publishedDates(publishedDates)
                 .nextUrl(nextUrl)
                 .build();
     }
@@ -126,6 +131,13 @@ public class SchoolNoticeClient {
     // 목록 링크의 검색 조건을 뺀 원문 주소, 수집 공지의 중복 확인 키
     public String canonicalUrl(SchoolNoticeProperties.Source source, Long articleId) {
         return source.getUrl().split("\\?")[0] + "?mode=view&articleNo=" + articleId;
+    }
+
+    // 목록형은 같은 행, 이미지형은 링크 안의 게시일
+    private LocalDate listDate(Element link) {
+        Element row = link.closest("tr");
+        Matcher matcher = DATE.matcher((row == null ? link : row).select(".b-date").text());
+        return matcher.find() ? LocalDate.parse(matcher.group(), DateTimeFormatter.ofPattern("yyyy.MM.dd")) : null;
     }
 
     private int offset(String url) {
