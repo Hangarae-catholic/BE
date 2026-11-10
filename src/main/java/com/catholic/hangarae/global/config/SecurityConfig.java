@@ -16,6 +16,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -52,10 +55,24 @@ public class SecurityConfig {
                     if (isDev) {
                         auth.anyRequest().permitAll(); // 모든 요청 허용 (테스트용)
                     } else {
-                        auth.anyRequest().authenticated(); // 운영 환경에서는 인증 필요
+                        // shortcut: 프론트 테스트 기간이라 운영도 모든 요청 허용, 테스트 끝나면 authenticated()로 되돌림
+                        auth.anyRequest().permitAll();
                     }
                 }).addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // 기본 로그인 앞에 jwt 필터 추가
         return http.build();
+    }
+
+    // shortcut: 프론트 테스트 기간이라 모든 출처 허용, 프론트 배포 주소가 정해지면 그 주소만 허용
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOriginPattern("*");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
 }
