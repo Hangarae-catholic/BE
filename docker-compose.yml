@@ -33,7 +33,7 @@ services:
       SCHOOL_NOTICE_RUN_ON_STARTUP: "true" # 백필 끝나면 false
       SCHOOL_NOTICE_MAX_PAGES: "0" # 페이지 수 제한 없이 최근 1년치 수집
       JEV_ENABLED: "true"
-      GEMINI_ENABLED: "false" # 백필 끝나면 true
+      GEMINI_ENABLED: "true"
       JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=50.0 -XX:+ExitOnOutOfMemoryError"
       TZ: Asia/Seoul
 
