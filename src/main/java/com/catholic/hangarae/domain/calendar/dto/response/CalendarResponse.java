@@ -17,7 +17,6 @@ public class CalendarResponse {
     public static class NoticeRes {
         private Long noticeId;
         private String name;
-        private String summary;
         private LocalDateTime startAt;
         private LocalDateTime endAt;
         private Location location;
