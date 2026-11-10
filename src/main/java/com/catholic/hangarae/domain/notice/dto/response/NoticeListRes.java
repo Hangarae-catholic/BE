@@ -15,7 +15,6 @@ public class NoticeListRes {
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     private Location location;
-    private String summary;
     private boolean approved;
 
 }

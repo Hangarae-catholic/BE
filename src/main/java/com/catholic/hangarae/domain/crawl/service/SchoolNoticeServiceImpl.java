@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -67,18 +68,26 @@ public class SchoolNoticeServiceImpl implements SchoolNoticeService {
         Set<String> pages = new HashSet<>();
         Set<Long> articles = new HashSet<>();
         int pageCount = 0;
+        LocalDate cutoff = LocalDate.now().minusDays(properties.getMaxAgeDays());
         try {
-            // 설정한 페이지 수까지 다음 페이지로 이동, 0이면 마지막 페이지까지
+            // 설정한 페이지 수까지 다음 페이지로 이동, 0이면 수집 기간이 끝나는 페이지까지
             while (url != null && pages.add(url)
                     && (properties.getMaxPages() == 0 || pageCount < properties.getMaxPages())) {
                 BoardPageRes page = schoolNoticeClient.parseList(schoolNoticeClient.fetch(url));
+                boolean hasRecent = false;
                 for (Map.Entry<Long, String> article : page.getArticles().entrySet()) {
-                    if (articles.add(article.getKey())) {
+                    // 고정 공지는 페이지마다 반복되므로 처음 본 글만 기간을 판단
+                    if (!articles.add(article.getKey())) {
+                        continue;
+                    }
+                    LocalDate publishedDate = page.getPublishedDates().get(article.getKey());
+                    if (publishedDate == null || !publishedDate.isBefore(cutoff)) {
+                        hasRecent = true;
                         collectArticle(source, article.getKey(), article.getValue());
                     }
                 }
                 pageCount++;
-                url = page.getNextUrl();
+                url = hasRecent ? page.getNextUrl() : null;
             }
             log.info("학교 공지 수집 완료, 게시판={}, 페이지={}, 확인 게시글={}", source.getKey(), pageCount, articles.size());
         } catch (InterruptedException exception) {

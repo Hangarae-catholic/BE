@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @Builder
 public class GeminiDescribeRes {
 
-    private String summary;
     private String information;
     private LocalDate startDate;
     private LocalDate endDate;
