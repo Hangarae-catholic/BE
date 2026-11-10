@@ -5,6 +5,7 @@ school-notice:
   # 과거 공지 적재처럼 바로 수집이 필요할 때만 true
   run-on-startup: ${SCHOOL_NOTICE_RUN_ON_STARTUP:false}
   max-pages: ${SCHOOL_NOTICE_MAX_PAGES:3}
+  max-age-days: 365
   request-delay-ms: 500
   timeout-ms: 15000
   sources:

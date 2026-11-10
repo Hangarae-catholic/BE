@@ -27,6 +27,10 @@ public class SchoolNoticeProperties {
     @Min(0)
     private int maxPages = 3;
 
+    // 공지는 1년치만 수집
+    @Min(1)
+    private int maxAgeDays = 365;
+
     @Min(100)
     private long requestDelayMs = 500;
 
