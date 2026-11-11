@@ -12,7 +12,7 @@ public interface TeamService {
 
     Long createTeam(Long userId, TeamRequest.CreateReq req);
     TeamResponse.DetailRes getTeamDetail(Long teamId);
-    List<TeamResponse.ListRes> getTeams(TeamCategory category, String keyword);
+    List<TeamResponse.ListRes> getTeams(TeamCategory category, String keyword,boolean latestFirst);
     Void deleteTeam(Long userId, Long teamId);
     Long updateTeam(Long userId, Long teamId, TeamRequest.UpdateReq req);
     void closeExpiredTeams();

@@ -133,6 +133,7 @@ public class TeamServiceImpl implements TeamService {
                 .remainingMember(team.getRemainingMember())
                 .userName(user.getName())
                 .studentStatus(user.getStatus())
+                .character(user.getCharacter())
                 .department(department)
                 .category(team.getCategory())
                 .teamStatus(team.getStatus())
@@ -151,6 +152,11 @@ public class TeamServiceImpl implements TeamService {
                 .map(ud -> ud.getDepartment().getName())
                 .orElse(null);
 
+        String imageUrl = teamImageRepository
+                .findFirstByTeamIdOrderByIdAsc(team.getId())
+                .map(teamImage -> teamImage.getImage().getUrl())
+                .orElse(null);
+
         return TeamResponse.ListRes.builder()
                 .teamId(team.getId())
                 .title(team.getTitle())
@@ -163,17 +169,20 @@ public class TeamServiceImpl implements TeamService {
                 .department(department)
                 .category(team.getCategory())
                 .teamStatus(team.getStatus())
+                .detail(team.getDetail())
+                .imageUrl(imageUrl)
+                .createdAt(team.getCreatedAt())
                 .build();
     }
 
     // 팀 리스트 조회 - RECRUITING 먼저 조회 / 검색 / 카테고리 별 조회
     @Transactional(readOnly = true)
     @Override
-    public List<TeamResponse.ListRes> getTeams(TeamCategory category, String keyword) {
+    public List<TeamResponse.ListRes> getTeams(TeamCategory category, String keyword, boolean latestFirst) {
         if (keyword != null && keyword.isBlank()) {
             keyword = null;
         }
-        List<Team> teams = teamRepository.searchTeams(category, keyword);
+        List<Team> teams = teamRepository.searchTeams(category, keyword, latestFirst);
         return teams.stream().map(this::toListRes).toList();
     }
 

@@ -6,10 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TeamImageRepository extends JpaRepository<TeamImage, Long> {
 
     List<TeamImage> findAllByTeamId(Long teamId);
     void deleteAllByTeamId(Long teamId);
+    Optional<TeamImage> findFirstByTeamIdOrderByIdAsc(Long teamId);
+
 }

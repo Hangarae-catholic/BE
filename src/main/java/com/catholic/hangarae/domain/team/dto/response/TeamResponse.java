@@ -5,6 +5,7 @@ import com.catholic.hangarae.domain.team.vo.TeamCategory;
 import com.catholic.hangarae.domain.team.vo.TeamContactType;
 import com.catholic.hangarae.domain.team.vo.TeamStatus;
 import com.catholic.hangarae.domain.user.vo.StudentStatus;
+import com.catholic.hangarae.domain.user.vo.UserCharacter;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,6 +32,7 @@ public class TeamResponse{
         private String userName;
         private StudentStatus studentStatus;
         private DepartmentType department;
+        private UserCharacter character;
 
         private TeamCategory category;
         private TeamStatus teamStatus;
@@ -56,6 +58,10 @@ public class TeamResponse{
 
         private TeamCategory category;
         private TeamStatus teamStatus;
+
+        private String detail;
+        private String imageUrl;
+        private LocalDateTime createdAt;
     }
 
     @Getter
