@@ -6,6 +6,7 @@ import com.catholic.hangarae.domain.user.entity.OAuthTicket;
 import com.catholic.hangarae.domain.user.repository.OAuthTicketRepository;
 import com.catholic.hangarae.global.apiPayLoad.error.AuthErrorCode;
 import com.catholic.hangarae.global.apiPayLoad.exception.BusinessException;
+import org.springframework.scheduling.annotation.Scheduled;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.core.JacksonException;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +72,6 @@ public class OAuthTicketServiceImpl implements OAuthTicketService {
 
         // 만료 확인
         if (oauthTicket.getExpiresAt().isBefore(LocalDateTime.now())) {
-            oauthTicketRepository.delete(oauthTicket);
             throw new BusinessException(AuthErrorCode.OAUTH_TICKET_EXPIRED);
         }
 
@@ -84,5 +84,13 @@ public class OAuthTicketServiceImpl implements OAuthTicketService {
         } catch (JacksonException e) {
             throw new BusinessException(AuthErrorCode.OAUTH_TICKET_PARSE_FAILED);
         }
+    }
+
+    // 1시간마다 만료 티켓 정리
+    @Scheduled(fixedDelay = 3600000)
+    public void cleanupExpiredTickets() {
+        oauthTicketRepository.deleteByExpiresAtBefore(
+                LocalDateTime.now()
+        );
     }
 }
