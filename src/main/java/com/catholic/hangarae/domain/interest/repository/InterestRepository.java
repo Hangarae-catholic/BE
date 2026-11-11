@@ -1,6 +1,7 @@
 package com.catholic.hangarae.domain.interest.repository;
 
 import com.catholic.hangarae.domain.interest.entity.Interest;
+import com.catholic.hangarae.domain.interest.vo.InterestType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface InterestRepository extends JpaRepository<Interest, Long> {
 
     // 관심 분야 단건 조회
     Optional<Interest> findById(Long interestId);
+
+    Optional<Interest> findByName(InterestType name);
 }
