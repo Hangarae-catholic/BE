@@ -315,11 +315,6 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(()-> new BusinessException(NoticeErrorCode.NOTICE_NOT_FOUND));
 
-        // 사설 행사만
-        if (notice.getType() != NoticeType.PRIVATE) {
-            throw new BusinessException(NoticeErrorCode.PRIVATE_NOTICE_ONLY);
-        }
-
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
@@ -355,11 +350,6 @@ public class NoticeServiceImpl implements NoticeService {
 
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(()-> new BusinessException(NoticeErrorCode.NOTICE_NOT_FOUND));
-
-        // 사설 공지만
-        if (notice.getType() != NoticeType.PRIVATE) {
-            throw new BusinessException(NoticeErrorCode.PRIVATE_NOTICE_ONLY);
-        }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new BusinessException(UserErrorCode.USER_NOT_FOUND));
