@@ -1,17 +1,11 @@
 package com.catholic.hangarae.domain.user.controller;
 
-import com.catholic.hangarae.domain.user.dto.request.AuthRequest;
-import com.catholic.hangarae.domain.user.dto.request.EmailCodeSendReq;
-import com.catholic.hangarae.domain.user.dto.request.FindIdReq;
-import com.catholic.hangarae.domain.user.dto.request.FindIdSendReq;
-import com.catholic.hangarae.domain.user.dto.request.PasswordResetReq;
-import com.catholic.hangarae.domain.user.dto.request.PasswordResetSendReq;
-import com.catholic.hangarae.domain.user.dto.request.ReissueReq;
-import com.catholic.hangarae.domain.user.dto.request.VerifyCodeReq;
+import com.catholic.hangarae.domain.user.dto.request.*;
 import com.catholic.hangarae.domain.user.dto.response.FindIdRes;
 import com.catholic.hangarae.domain.user.dto.response.OAuthLoginRes;
 import com.catholic.hangarae.domain.user.dto.response.TokenRes;
 import com.catholic.hangarae.domain.user.service.AuthService;
+import com.catholic.hangarae.domain.user.service.OAuthTicketService;
 import com.catholic.hangarae.domain.user.vo.OAuthNextStep;
 import com.catholic.hangarae.global.apiPayLoad.response.Response;
 import com.catholic.hangarae.global.apiPayLoad.result.UserResultCode;
@@ -19,17 +13,24 @@ import com.catholic.hangarae.global.security.annotation.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Tag(name="Auth", description = "로그인 API")
 public class AuthController {
 
     private final AuthService authService;
+    private final OAuthTicketService oauthTicketService;
+
+    @Value("${oauth.redirect.frontend-url}")
+    private String oauthFrontendUrl;
 
     @PostMapping("/sign-up")
     @Operation(summary = "회원가입", description = "새로운 회원 등록")
@@ -116,14 +117,28 @@ public class AuthController {
                 .build();
     }
 
+
     @GetMapping("/kakao/callback")
     @Operation(summary = "카카오 로그인 콜백")
-    public Response<OAuthLoginRes> kakaoCallback(@RequestParam("code") String code) {
+    public ResponseEntity<Void> kakaoCallback(@RequestParam("code") String code) {
         OAuthLoginRes result = authService.kakaoLogin(code);
+        String ticket = oauthTicketService.createTicket(result);
+        String redirectUrl = oauthFrontendUrl + "/auth/kakao/result?ticket=" + ticket;
+
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, redirectUrl)
+                .build();
+    }
+
+    @PostMapping("/oauth/ticket")
+    @Operation(summary = "OAuth 티켓 교환")
+    public Response<OAuthLoginRes> exchangeOAuthTicket(@RequestBody @Valid OAuthTicketReq request) {
+        OAuthLoginRes result = oauthTicketService.exchangeTicket(request.ticket());
         if (result.nextStep() == OAuthNextStep.SIGN_UP) {
-            return Response.ok(UserResultCode.USER_KAKAO_SIGNUP_OK, result);
+            return Response.ok(UserResultCode.OAUTH_SIGNUP_OK, result);
         }
-        return Response.ok(UserResultCode.USER_KAKAO_LOGIN_OK, result);
+        return Response.ok(UserResultCode.OAUTH_LOGIN_OK, result);
     }
 
     @GetMapping("/google")
