@@ -2,8 +2,10 @@ package com.catholic.hangarae.domain.user.service;
 
 import com.catholic.hangarae.domain.department.entity.Department;
 import com.catholic.hangarae.domain.department.repository.DepartmentRepository;
+import com.catholic.hangarae.domain.department.vo.DepartmentType;
 import com.catholic.hangarae.domain.interest.entity.Interest;
 import com.catholic.hangarae.domain.interest.repository.InterestRepository;
+import com.catholic.hangarae.domain.interest.vo.InterestType;
 import com.catholic.hangarae.domain.user.dto.request.UserRequest;
 import com.catholic.hangarae.domain.user.dto.response.UserResponse;
 import com.catholic.hangarae.domain.user.entity.User;
@@ -87,7 +89,6 @@ public class UserServiceImpl implements UserService {
         List<UserResponse.DepartmentRes> departments = new ArrayList<>();
         for (Department department : departmentRepository.findAll()) {
             departments.add(UserResponse.DepartmentRes.builder()
-                    .departmentId(department.getId())
                     .name(department.getName())
                     .division(department.getDivision())
                     .build());
@@ -97,7 +98,6 @@ public class UserServiceImpl implements UserService {
         List<UserResponse.InterestRes> interests = new ArrayList<>();
         for (Interest interest : interestRepository.findAll()) {
             interests.add(UserResponse.InterestRes.builder()
-                    .interestId(interest.getId())
                     .name(interest.getName())
                     .build());
         }
@@ -115,11 +115,11 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(UserErrorCode.NICKNAME_ALREADY_EXIST);
         }
         // 전공 조회와 검증
-        Department primary = findDepartment(request.getPrimaryDepartmentId());
-        Department doubleMajor = findDepartment(request.getDoubleMajorDepartmentId());
-        Department minor = findDepartment(request.getMinorDepartmentId());
+        Department primary = findDepartment(request.getPrimaryDepartment());
+        Department doubleMajor = findDepartment(request.getDoubleMajorDepartment());
+        Department minor = findDepartment(request.getMinorDepartment());
         validateDepartments(primary, doubleMajor, minor);
-        List<Interest> interests = validateInterests(request.getInterestIds());
+        List<Interest> interests = validateInterests(request.getInterests());
 
         // 목록에서 제외한 추가 전공과 관심 분야는 삭제
         userDepartmentRepository.deleteAllByUserId(user.getId());
@@ -138,11 +138,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private Department findDepartment(Long departmentId) {
-        if (departmentId == null) {
+    private Department findDepartment(DepartmentType name) {
+        if (name == null) {
             return null;
         }
-        return departmentRepository.findById(departmentId)
+        return departmentRepository.findByName(name)
                 .orElseThrow(() -> new BusinessException(UserErrorCode.DEPARTMENT_NOT_FOUND));
     }
 
@@ -175,14 +175,14 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private List<Interest> validateInterests(List<Long> interestIds) {
+    private List<Interest> validateInterests(List<InterestType> names) {
         List<Interest> result = new ArrayList<>();
-        for (Long interestId : interestIds) {
+        for (InterestType name : names) {
             // 같은 관심 분야 중복 선택 방지
-            if (Collections.frequency(interestIds, interestId) > 1) {
+            if (Collections.frequency(names, name) > 1) {
                 throw new BusinessException(UserErrorCode.INVALID_INTERESTS);
             }
-            Interest interest = interestRepository.findById(interestId)
+            Interest interest = interestRepository.findByName(name)
                     .orElseThrow(() -> new BusinessException(UserErrorCode.INTEREST_NOT_FOUND));
             result.add(interest);
         }
@@ -195,7 +195,6 @@ public class UserServiceImpl implements UserService {
         for (UserDepartment item : userDepartmentRepository.findAllByUserIdOrderByIdAsc(user.getId())) {
             Department department = item.getDepartment();
             departments.add(UserResponse.DepartmentRes.builder()
-                    .departmentId(department.getId())
                     .name(department.getName())
                     .division(department.getDivision())
                     .type(item.getType())
@@ -206,7 +205,6 @@ public class UserServiceImpl implements UserService {
         List<UserResponse.InterestRes> interests = new ArrayList<>();
         for (UserInterest item : userInterestRepository.findAllByUserIdOrderByIdAsc(user.getId())) {
             interests.add(UserResponse.InterestRes.builder()
-                    .interestId(item.getInterest().getId())
                     .name(item.getInterest().getName())
                     .build());
         }

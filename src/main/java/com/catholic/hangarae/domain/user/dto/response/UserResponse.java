@@ -28,7 +28,6 @@ public class UserResponse {
     @Getter
     @Builder
     public static class DepartmentRes {
-        private Long departmentId;
         private DepartmentType name;
         private Division division;
         private UserDepartmentType type;
@@ -37,7 +36,6 @@ public class UserResponse {
     @Getter
     @Builder
     public static class InterestRes {
-        private Long interestId;
         private InterestType name;
     }
 
