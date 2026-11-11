@@ -46,19 +46,18 @@ public class OAuthTicketServiceImpl implements OAuthTicketService {
             throw new BusinessException(AuthErrorCode.OAUTH_TICKET_CREATE_FAILED);
         }
 
-        // 3. 티켓 만료 시간 설정 (2분)
+        // 티켓 만료 시간 설정 (2분)
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(2);
 
-        // 4. DB 저장
+        // DB 저장
         OAuthTicket oauthTicket = OAuthTicket.builder()
                 .ticket(ticket)
                 .payload(payload)
                 .expiresAt(expiresAt)
                 .build();
-
         oauthTicketRepository.save(oauthTicket);
 
-        // 5. 프론트엔드에 전달할 티켓 반환
+        // 프론트엔드에 티켓 반환
         return ticket;
     }
 
@@ -89,8 +88,6 @@ public class OAuthTicketServiceImpl implements OAuthTicketService {
     // 1시간마다 만료 티켓 정리
     @Scheduled(fixedDelay = 3600000)
     public void cleanupExpiredTickets() {
-        oauthTicketRepository.deleteByExpiresAtBefore(
-                LocalDateTime.now()
-        );
+        oauthTicketRepository.deleteByExpiresAtBefore(LocalDateTime.now());
     }
 }
