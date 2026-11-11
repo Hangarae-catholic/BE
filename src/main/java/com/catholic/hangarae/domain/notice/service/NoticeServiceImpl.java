@@ -33,8 +33,10 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -67,6 +69,7 @@ public class NoticeServiceImpl implements NoticeService {
                 selectedDate.atStartOfDay(), selectedDate.plusDays(1).atStartOfDay());
 
         // 목록 응답 생성
+        Map<Long, List<String>> imageUrls = findImageUrls(notices);
         List<NoticeListRes> response = new ArrayList<>();
         for (Notice notice : notices) {
             NoticeListRes item = NoticeListRes.builder()
@@ -76,6 +79,7 @@ public class NoticeServiceImpl implements NoticeService {
                     .endAt(notice.getEndAt())
                     .location(notice.getLocation())
                     .approved(notice.isApproved())
+                    .imageUrls(imageUrls.getOrDefault(notice.getId(), List.of()))
                     .build();
             response.add(item);
         }
@@ -98,6 +102,7 @@ public class NoticeServiceImpl implements NoticeService {
                 userId, today.atStartOfDay(), today.plusDays(1).atStartOfDay());
 
         // 여러 학과 게시판에 올라온 같은 공지는 제목과 기간이 같으면 하나만 추천
+        Map<Long, List<String>> imageUrls = findImageUrls(notices);
         List<NoticeListRes> response = new ArrayList<>();
         Set<String> shown = new HashSet<>();
         for (Notice notice : notices) {
@@ -114,10 +119,22 @@ public class NoticeServiceImpl implements NoticeService {
                     .endAt(notice.getEndAt())
                     .location(notice.getLocation())
                     .approved(notice.isApproved())
+                    .imageUrls(imageUrls.getOrDefault(notice.getId(), List.of()))
                     .build();
             response.add(item);
         }
         return response;
+    }
+
+    // 행사별 이미지 URL을 한 번의 조회로 묶음
+    private Map<Long, List<String>> findImageUrls(List<Notice> notices) {
+        List<Long> noticeIds = notices.stream().map(Notice::getId).toList();
+        Map<Long, List<String>> result = new HashMap<>();
+        for (NoticeImage noticeImage : noticeImageRepository.findAllByNoticeIdInOrderByIdAsc(noticeIds)) {
+            result.computeIfAbsent(noticeImage.getNotice().getId(), id -> new ArrayList<>())
+                    .add(noticeImage.getImage().getUrl());
+        }
+        return result;
     }
 
     @Override

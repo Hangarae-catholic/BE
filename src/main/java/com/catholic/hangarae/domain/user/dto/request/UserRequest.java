@@ -1,10 +1,11 @@
 package com.catholic.hangarae.domain.user.dto.request;
 
+import com.catholic.hangarae.domain.department.vo.DepartmentType;
+import com.catholic.hangarae.domain.interest.vo.InterestType;
 import com.catholic.hangarae.domain.user.vo.StudentStatus;
 import com.catholic.hangarae.domain.user.vo.UserCharacter;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,17 +27,14 @@ public class UserRequest {
         private StudentStatus status;
         // 제1전공
         @NotNull
-        @Positive
-        private Long primaryDepartmentId;
+        private DepartmentType primaryDepartment;
         // 복수전공
-        @Positive
-        private Long doubleMajorDepartmentId;
+        private DepartmentType doubleMajorDepartment;
         // 부전공
-        @Positive
-        private Long minorDepartmentId;
+        private DepartmentType minorDepartment;
         @NotNull
         @Size(min = 1, max = 4)
-        private List<@NotNull @Positive Long> interestIds;
+        private List<@NotNull InterestType> interests;
     }
 
 }

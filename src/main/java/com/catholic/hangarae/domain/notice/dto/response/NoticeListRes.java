@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -16,5 +17,6 @@ public class NoticeListRes {
     private LocalDateTime endAt;
     private Location location;
     private boolean approved;
+    private List<String> imageUrls;
 
 }

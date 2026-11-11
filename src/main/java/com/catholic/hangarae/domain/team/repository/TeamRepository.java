@@ -14,7 +14,6 @@ import java.util.List;
 @Repository
 public interface TeamRepository extends JpaRepository<Team, Long> {
 
-
     @Query("""
     SELECT t FROM Team t
     WHERE (:category IS NULL OR t.category = :category)
@@ -25,13 +24,15 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
       )
     ORDER BY
         CASE WHEN t.status = 'RECRUITING' THEN 0 ELSE 1 END,
+        CASE WHEN :latestSort = true THEN t.createdAt END DESC,
+        CASE WHEN :latestSort = false THEN t.createdAt END ASC,
         t.id DESC
 """)
     List<Team> searchTeams(
             @Param("category") TeamCategory category,
-            @Param("keyword") String keyword
+            @Param("keyword") String keyword,
+            @Param("latestSort") boolean latestSort
     );
-
 
     List<Team> findByEndAtBeforeAndStatus(LocalDateTime now, TeamStatus status);
     List<Team> findAllByUserIdOrderByCreatedAtDesc(Long userId);

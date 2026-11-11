@@ -10,4 +10,8 @@ public interface NoticeImageRepository extends JpaRepository<NoticeImage, Long> 
 
     @EntityGraph(attributePaths = "image")
     List<NoticeImage> findAllByNoticeIdOrderByIdAsc(Long noticeId);
+
+    // 목록의 행사 이미지를 한 번에 조회
+    @EntityGraph(attributePaths = "image")
+    List<NoticeImage> findAllByNoticeIdInOrderByIdAsc(List<Long> noticeIds);
 }

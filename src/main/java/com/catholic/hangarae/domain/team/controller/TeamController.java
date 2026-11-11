@@ -33,11 +33,13 @@ public class TeamController {
         return Response.of(TeamResultCode.TEAM_CREATE_OK, teamId);}
 
     @GetMapping
-    @Operation(summary = "팀 매칭 목록 조회 및 검색", description = "팀 매칭 목록을 전체 조회, 검색, 카테고리별 조회 합니다."
-    )
-    public Response<List<TeamResponse.ListRes>> getTeams(@RequestParam(required = false) TeamCategory category,
-                                                         @RequestParam(required = false) String keyword) {
-        List<TeamResponse.ListRes> response = teamService.getTeams(category, keyword);
+    @Operation(summary = "팀 매칭 목록 조회 및 검색", description = "팀 매칭 목록을 전체 조회, 검색, 카테고리별 조회, 등록일순 정렬.")
+    public Response<List<TeamResponse.ListRes>> getTeams(
+            @RequestParam(required = false) TeamCategory category,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "true") boolean latestFirst
+    ) {
+        List<TeamResponse.ListRes> response = teamService.getTeams(category, keyword, latestFirst);
         return Response.of(TeamResultCode.TEAM_LIST_OK, response);
     }
 
