@@ -123,7 +123,7 @@ public class AuthController {
     public ResponseEntity<Void> kakaoCallback(@RequestParam("code") String code) {
         OAuthLoginRes result = authService.kakaoLogin(code);
         String ticket = oauthTicketService.createTicket(result);
-        String redirectUrl = oauthFrontendUrl + "/auth/kakao/result?ticket=" + ticket;
+        String redirectUrl = oauthFrontendUrl + "/auth/oauth/result?ticket=" + ticket;
 
         return ResponseEntity
                 .status(HttpStatus.FOUND)
@@ -152,11 +152,16 @@ public class AuthController {
 
     @GetMapping("/google/callback")
     @Operation(summary = "구글 로그인 콜백")
-    public Response<OAuthLoginRes> googleCallback(@RequestParam("code") String code) {
+    public ResponseEntity<Void> googleCallback(@RequestParam("code") String code) {
         OAuthLoginRes result = authService.googleLogin(code);
-        if (result.nextStep() == OAuthNextStep.SIGN_UP) {
-            return Response.ok(UserResultCode.USER_GOOGLE_SIGNUP_OK, result);
-        }
-        return Response.ok(UserResultCode.USER_GOOGLE_LOGIN_OK, result);
+        String ticket = oauthTicketService.createTicket(result);
+        String redirectUrl =
+                oauthFrontendUrl + "/auth/oauth/result?ticket=" + ticket;
+
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, redirectUrl)
+                .build();
     }
+
 }
