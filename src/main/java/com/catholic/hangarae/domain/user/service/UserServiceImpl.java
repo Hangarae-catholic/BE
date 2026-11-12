@@ -72,6 +72,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    public void checkProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+        checkProfileExists(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public void checkNickname(Long userId, String nickname) {
         if (!userRepository.existsById(userId)) {
             throw new BusinessException(UserErrorCode.USER_NOT_FOUND);
