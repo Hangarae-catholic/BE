@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 public enum UserErrorCode implements ErrorCode {
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND,"USER001","사용자를 찾을 수 없습니다"),
-    INVALID_NICKNAME_FORMAT(HttpStatus.BAD_REQUEST, "USER002", "올바른 닉네임 형식이 아닙니다"),
     NICKNAME_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "USER003", "사용 불가능한 닉네임입니다"),
     INVALID_DEPARTMENTS(HttpStatus.BAD_REQUEST, "USER004", "제1전공 1개를 포함해 전공은 최대 3개, 계열은 최대 2개 선택해 주세요"),
     INVALID_INTERESTS(HttpStatus.BAD_REQUEST, "USER005", "관심 분야는 중복 없이 1개부터 4개까지 선택해 주세요"),
