@@ -18,5 +18,7 @@ public enum Location {
     CHURCH, //성당
     STEPHANO_DORMITORY, // 스테파노 기숙사
     ANDREA_DORMITORY, // 안드레아 기숙사
+    INTERNATIONAL_HALL, // 국제관
+    SMURF_HILL, // 스머프동산
 
     }
