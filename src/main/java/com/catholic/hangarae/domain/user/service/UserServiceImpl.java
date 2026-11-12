@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -84,7 +83,6 @@ public class UserServiceImpl implements UserService {
         if (!userRepository.existsById(userId)) {
             throw new BusinessException(UserErrorCode.USER_NOT_FOUND);
         }
-        validateNickname(nickname);
         if (userRepository.existsByNicknameAndIdNot(nickname, userId)) {
             throw new BusinessException(UserErrorCode.NICKNAME_ALREADY_EXIST);
         }
@@ -118,7 +116,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private void saveProfile(User user, UserRequest.ProfileReq request) {
-        validateNickname(request.getNickname());
         if (userRepository.existsByNicknameAndIdNot(request.getNickname(), user.getId())) {
             throw new BusinessException(UserErrorCode.NICKNAME_ALREADY_EXIST);
         }
@@ -232,12 +229,4 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(UserErrorCode.PROFILE_NOT_FOUND);
         }
     }
-
-    private void validateNickname(String nickname) {
-        if (nickname == null || !NICKNAME_PATTERN.matcher(nickname).matches()) {
-            throw new BusinessException(UserErrorCode.INVALID_NICKNAME_FORMAT);
-        }
-    }
-
-    private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[\\p{L}\\p{N}]{6,255}$");
 }
