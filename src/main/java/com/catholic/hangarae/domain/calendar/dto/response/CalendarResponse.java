@@ -7,6 +7,7 @@ import com.catholic.hangarae.domain.notice.vo.NoticeScheduleType;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class CalendarResponse {
@@ -23,5 +24,14 @@ public class CalendarResponse {
         private NoticeCategory category;
         private NoticeScheduleType scheduleType;
         private Division division;
+    }
+
+    // 학사일정
+    @Getter
+    @Builder
+    public static class AcademicRes {
+        private String name;
+        private LocalDate startDate;
+        private LocalDate endDate;
     }
 }

@@ -2,6 +2,7 @@ package com.catholic.hangarae.domain.calendar.service;
 
 import com.catholic.hangarae.domain.calendar.dto.request.CalendarRequest;
 import com.catholic.hangarae.domain.calendar.dto.response.CalendarResponse;
+import com.catholic.hangarae.domain.calendar.vo.AcademicSchedule;
 import com.catholic.hangarae.domain.notice.entity.Notice;
 import com.catholic.hangarae.domain.notice.repository.NoticeRepository;
 import com.catholic.hangarae.domain.notice.vo.NoticeType;
@@ -64,6 +65,24 @@ public class CalendarServiceImpl implements CalendarService {
                     .division(notice.getDepartment() == null ? null : notice.getDepartment().getDivision())
                     .build();
             response.add(item);
+        }
+        return response;
+    }
+
+    @Override
+    public List<CalendarResponse.AcademicRes> getAcademicCalendar(CalendarRequest.AcademicReq request) {
+        YearMonth month = YearMonth.of(request.getYear(), request.getMonth());
+        // 선택한 월과 기간이 하루라도 겹치는 학사일정
+        List<CalendarResponse.AcademicRes> response = new ArrayList<>();
+        for (AcademicSchedule.Item item : AcademicSchedule.ITEMS) {
+            if (item.startDate().isAfter(month.atEndOfMonth()) || item.endDate().isBefore(month.atDay(1))) {
+                continue;
+            }
+            response.add(CalendarResponse.AcademicRes.builder()
+                    .name(item.name())
+                    .startDate(item.startDate())
+                    .endDate(item.endDate())
+                    .build());
         }
         return response;
     }

@@ -36,4 +36,19 @@ public class CalendarRequest {
         @Size(min = 1, max = 2)
         private List<@NotNull NoticeCategory> categories;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class AcademicReq {
+        // 조회 연도와 월
+        @NotNull
+        @Min(1)
+        @Max(9999)
+        private Integer year;
+        @NotNull
+        @Min(1)
+        @Max(12)
+        private Integer month;
+    }
 }

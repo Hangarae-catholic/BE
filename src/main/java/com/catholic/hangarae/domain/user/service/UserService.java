@@ -9,5 +9,7 @@ public interface UserService {
     UserResponse.ProfileRes getProfile(Long userId);
     UserResponse.ProfileRes updateProfile(Long userId, UserRequest.ProfileReq request);
     void checkNickname(Long userId, String nickname);
+
+    void checkProfile(Long userId);
     UserResponse.ProfileOptionsRes getProfileOptions();
 }
