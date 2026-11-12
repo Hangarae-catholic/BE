@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum CalendarResultCode implements ResultCode {
 
     CALENDAR_LIST_OK(HttpStatus.OK, "CALENDAR001", "캘린더 조회 성공"),
+    ACADEMIC_CALENDAR_LIST_OK(HttpStatus.OK, "CALENDAR002", "학사일정 조회 성공"),
     ;
 
     private final HttpStatus httpStatus;

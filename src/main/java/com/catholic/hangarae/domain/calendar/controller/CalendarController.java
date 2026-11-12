@@ -31,4 +31,11 @@ public class CalendarController {
             @AuthUser Long userId, @Valid @ModelAttribute CalendarRequest.ListReq request) {
         return Response.of(CalendarResultCode.CALENDAR_LIST_OK, calendarService.getCalendar(userId, request));
     }
+
+    @GetMapping("/academic")
+    @Operation(summary = "월별 학사일정 조회", description = "가톨릭대 성심교정 학사일정 중 선택한 월과 기간이 겹치는 일정을 조회합니다. 현재 2026년만 제공")
+    public Response<List<CalendarResponse.AcademicRes>> getAcademicCalendar(
+            @Valid @ModelAttribute CalendarRequest.AcademicReq request) {
+        return Response.of(CalendarResultCode.ACADEMIC_CALENDAR_LIST_OK, calendarService.getAcademicCalendar(request));
+    }
 }

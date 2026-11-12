@@ -8,4 +8,6 @@ import java.util.List;
 public interface CalendarService {
 
     List<CalendarResponse.NoticeRes> getCalendar(Long userId, CalendarRequest.ListReq request);
+
+    List<CalendarResponse.AcademicRes> getAcademicCalendar(CalendarRequest.AcademicReq request);
 }

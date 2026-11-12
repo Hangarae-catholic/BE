@@ -52,6 +52,13 @@ public class UserController {
         return Response.ok(UserResultCode.USER_NICKNAME_CHECK_OK, null);
     }
 
+    @GetMapping("/profile/check")
+    @Operation(summary = "프로필 생성 여부 확인", description = "로그인 후 프로필 존재 여부 확인.")
+    public Response<Void> checkProfile(@AuthUser Long userId) {
+        userService.checkProfile(userId);
+        return Response.ok(UserResultCode.USER_PROFILE_CHECK_OK, null);
+    }
+
     @GetMapping("/profile/options")
     @Operation(summary = "프로필 선택 항목 조회", description = "캐릭터, 학적, 계열별 학과와 관심 분야 목록을 조회합니다.")
     public Response<UserResponse.ProfileOptionsRes> getProfileOptions() {
