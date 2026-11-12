@@ -368,7 +368,9 @@ public class AuthServiceImpl implements AuthService {
         if (provider != null) {
             // 기존 회원
             user = provider.getUser();
-            oAuthNextStep = OAuthNextStep.LOGIN;
+            oAuthNextStep = user.getCharacter() == null
+                    ? OAuthNextStep.PROFILE_SETUP
+                    : OAuthNextStep.LOGIN;
 
         } else {
             // 신규 회원
@@ -506,7 +508,9 @@ public class AuthServiceImpl implements AuthService {
 
             // 기존 회원
             user = provider.getUser();
-            oAuthNextStep = OAuthNextStep.LOGIN;
+            oAuthNextStep = user.getCharacter() == null
+                    ? OAuthNextStep.PROFILE_SETUP
+                    : OAuthNextStep.LOGIN;
 
         } else {
 
