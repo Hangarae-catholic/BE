@@ -40,7 +40,8 @@ public class GeminiClient {
             Map.entry(Location.VERITAS_HALL, "중앙도서관(베리타스관)"), Map.entry(Location.SACRED_HEART_HALL, "성심관"),
             Map.entry(Location.PHARMACY_HALL, "약학관"), Map.entry(Location.CONCERT_HALL, "콘서트홀"),
             Map.entry(Location.CHURCH, "성당"), Map.entry(Location.STEPHANO_DORMITORY, "스테파노 기숙사"),
-            Map.entry(Location.ANDREA_DORMITORY, "안드레아 기숙사")));
+            Map.entry(Location.ANDREA_DORMITORY, "안드레아 기숙사"), Map.entry(Location.INTERNATIONAL_HALL, "국제관"),
+            Map.entry(Location.SMURF_HILL, "스머프동산")));
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final GeminiProperties properties;
