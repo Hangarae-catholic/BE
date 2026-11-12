@@ -369,5 +369,29 @@ public class NoticeServiceImpl implements NoticeService {
         return response;
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<NoticeListRes> getMyNotices(Long userId) {
+
+        List<Notice> notices = noticeRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+
+        Map<Long, List<String>> imageUrls = findImageUrls(notices);
+
+        List<NoticeListRes> response = new ArrayList<>();
+        for (Notice notice : notices) {
+            NoticeListRes item = NoticeListRes.builder()
+                    .noticeId(notice.getId())
+                    .name(notice.getName())
+                    .startAt(notice.getStartAt())
+                    .endAt(notice.getEndAt())
+                    .location(notice.getLocation())
+                    .approved(notice.isApproved())
+                    .imageUrls(imageUrls.getOrDefault(notice.getId(), List.of()))
+                    .build();
+
+            response.add(item);
+        }
+        return response;
+    }
 
 }

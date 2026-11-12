@@ -74,4 +74,6 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
                                      @Param("divisions") List<Division> divisions,
                                      @Param("categories") List<NoticeCategory> categories,
                                      @Param("userId") Long userId);
+
+    List<Notice> findAllByUserIdOrderByCreatedAtDesc(Long userId);
 }
