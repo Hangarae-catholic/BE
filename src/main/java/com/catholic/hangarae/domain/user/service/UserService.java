@@ -10,6 +10,6 @@ public interface UserService {
     UserResponse.ProfileRes updateProfile(Long userId, UserRequest.ProfileReq request);
     void checkNickname(Long userId, String nickname);
 
-    void checkProfile(Long userId);
+    boolean checkProfile(Long userId);
     UserResponse.ProfileOptionsRes getProfileOptions();
 }

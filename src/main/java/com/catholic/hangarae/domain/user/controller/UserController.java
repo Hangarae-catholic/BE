@@ -54,9 +54,8 @@ public class UserController {
 
     @GetMapping("/profile/check")
     @Operation(summary = "프로필 생성 여부 확인", description = "로그인 후 프로필 존재 여부 확인.")
-    public Response<Void> checkProfile(@AuthUser Long userId) {
-        userService.checkProfile(userId);
-        return Response.ok(UserResultCode.USER_PROFILE_CHECK_OK, null);
+    public Response<Boolean> checkProfile(@AuthUser Long userId) {
+        return Response.ok(UserResultCode.USER_PROFILE_CHECK_OK, userService.checkProfile(userId));
     }
 
     @GetMapping("/profile/options")

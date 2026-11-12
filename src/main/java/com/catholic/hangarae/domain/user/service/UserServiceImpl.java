@@ -72,10 +72,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public void checkProfile(Long userId) {
+    public boolean checkProfile(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
-        checkProfileExists(user);
+        return user.getCharacter() != null;
     }
 
     @Override
