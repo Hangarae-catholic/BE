@@ -30,6 +30,11 @@ public enum AuthErrorCode implements ErrorCode {
     GOOGLE_USER_INFO_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "AUTH022", "구글 사용자 정보를 가져오지 못했습니다."),
     GOOGLE_EMAIL_NOT_PROVIDED(HttpStatus.BAD_REQUEST, "AUTH023", "구글 계정에서 이메일을 제공받지 못했습니다."),
 
+    OAUTH_TICKET_INVALID(HttpStatus.BAD_REQUEST, "AUTH024", "유효하지 않은 OAuth 티켓입니다."),
+    OAUTH_TICKET_EXPIRED(HttpStatus.BAD_REQUEST, "AUTH025", "OAuth 티켓이 만료되었습니다."),
+    OAUTH_TICKET_PARSE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH026", "OAuth 티켓 데이터 변환에 실패했습니다."),
+    OAUTH_TICKET_CREATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH027","OAuth 티켓 생성에 실패했습니다."),
+
     ;
 
     private final HttpStatus httpStatus;

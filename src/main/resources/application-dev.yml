@@ -32,3 +32,7 @@ google:
     - email
     - profile
   redirect-uri: ${GOOGLE_REDIRECT_URI}
+
+oauth:
+  redirect:
+    frontend-url: ${OAUTH_FRONTEND_URL}
