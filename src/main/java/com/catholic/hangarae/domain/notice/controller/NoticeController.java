@@ -6,8 +6,10 @@ import com.catholic.hangarae.domain.notice.dto.response.NoticeDetailRes;
 import com.catholic.hangarae.domain.notice.dto.response.NoticeListRes;
 import com.catholic.hangarae.domain.notice.dto.response.NoticeReactionRes;
 import com.catholic.hangarae.domain.notice.service.NoticeService;
+import com.catholic.hangarae.domain.team.dto.response.TeamResponse;
 import com.catholic.hangarae.global.apiPayLoad.response.Response;
 import com.catholic.hangarae.global.apiPayLoad.result.NoticeResultCode;
+import com.catholic.hangarae.global.apiPayLoad.result.TeamResultCode;
 import com.catholic.hangarae.global.security.annotation.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -82,5 +84,12 @@ public class NoticeController {
     @Operation(summary = "행사 추천/비추천 조회", description = "사설 행사 추천/비추천 조회")
     public Response<NoticeReactionRes> getNoticeReaction(@AuthUser Long userId, @PathVariable Long noticeId) {
         return Response.of(NoticeResultCode.NOTICE_REACT_GET_OK, noticeService.getNoticeReaction(userId, noticeId));
+    }
+
+    @GetMapping("/my")
+    @Operation(summary = "사용자가 작성한 행사 목록 조회")
+    public Response<List<NoticeListRes>> getMyNotices(@AuthUser Long userId) {
+        List<NoticeListRes> response = noticeService.getMyNotices(userId);
+        return Response.of(NoticeResultCode.NOTICE_MY_LIST_OK, response);
     }
 }

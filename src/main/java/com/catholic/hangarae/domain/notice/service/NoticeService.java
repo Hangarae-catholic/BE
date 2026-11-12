@@ -5,6 +5,7 @@ import com.catholic.hangarae.domain.notice.dto.request.NoticeReactionReq;
 import com.catholic.hangarae.domain.notice.dto.response.NoticeDetailRes;
 import com.catholic.hangarae.domain.notice.dto.response.NoticeListRes;
 import com.catholic.hangarae.domain.notice.dto.response.NoticeReactionRes;
+import com.catholic.hangarae.domain.team.dto.response.TeamResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,4 +22,6 @@ public interface NoticeService {
 
     Void reactToNotice(Long userId, Long noticeId, NoticeReactionReq req);
     NoticeReactionRes getNoticeReaction(Long userId, Long noticeId);
+
+    List<NoticeListRes> getMyNotices(Long userId);
 }

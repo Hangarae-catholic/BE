@@ -16,7 +16,7 @@ public enum NoticeResultCode implements ResultCode {
     NOTICE_REACT_OK(HttpStatus.OK, "NOTICE005", "행사 추천/비추천 성공"),
     NOTICE_REACT_GET_OK(HttpStatus.OK, "NOTICE006", "행사 추천/비추천 조회 성공"),
     NOTICE_RECOMMEND_OK(HttpStatus.OK, "NOTICE007", "추천 행사 조회 성공"),
-
+    NOTICE_MY_LIST_OK(HttpStatus.OK, "NOTICE008", "사용자가 작성한 행사 목록 조회 성공")
 
     ;
 
