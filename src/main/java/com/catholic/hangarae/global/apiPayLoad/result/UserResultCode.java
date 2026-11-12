@@ -30,7 +30,7 @@ public enum UserResultCode implements ResultCode {
     USER_PROFILE_UPDATE_OK(HttpStatus.OK, "USER003", "프로필 수정 성공"),
     USER_NICKNAME_CHECK_OK(HttpStatus.OK, "USER004", "사용 가능한 닉네임입니다"),
     USER_PROFILE_OPTIONS_OK(HttpStatus.OK, "USER005", "프로필 선택 항목 조회 성공"),
-    USER_PROFILE_CHECK_OK(HttpStatus.OK, "USER006", "프로필이 생성된 회원입니다"),
+    USER_PROFILE_CHECK_OK(HttpStatus.OK, "USER006", "프로필 생성 여부 조회 성공"),
     ;
 
     private final HttpStatus httpStatus;
