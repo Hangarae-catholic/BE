@@ -16,6 +16,8 @@ public class GeminiDescribeRes {
     private LocalDate startDate;
     private LocalDate endDate;
     private Location location;
+    // 호실, 층 등 상세 주소
+    private String detailLocation;
     private NoticeScheduleType scheduleType;
 
     // 주최기관, 본문에 없으면 작성자
