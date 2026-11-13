@@ -78,6 +78,7 @@ public class NoticeServiceImpl implements NoticeService {
                     .startAt(notice.getStartAt())
                     .endAt(notice.getEndAt())
                     .location(notice.getLocation())
+                    .detailLocation(notice.getDetailLocation())
                     .approved(notice.isApproved())
                     .imageUrls(imageUrls.getOrDefault(notice.getId(), List.of()))
                     .build();
@@ -118,6 +119,7 @@ public class NoticeServiceImpl implements NoticeService {
                     .startAt(notice.getStartAt())
                     .endAt(notice.getEndAt())
                     .location(notice.getLocation())
+                    .detailLocation(notice.getDetailLocation())
                     .approved(notice.isApproved())
                     .imageUrls(imageUrls.getOrDefault(notice.getId(), List.of()))
                     .build();
@@ -167,6 +169,7 @@ public class NoticeServiceImpl implements NoticeService {
                 .startAt(notice.getStartAt())
                 .endAt(notice.getEndAt())
                 .location(notice.getLocation())
+                .detailLocation(notice.getDetailLocation())
                 .responsible(notice.getResponsible())
                 .information(notice.getInformation())
                 .url(notice.getUrl())
@@ -262,6 +265,7 @@ public class NoticeServiceImpl implements NoticeService {
                 .startAt(req.getStartAt())
                 .endAt(req.getEndAt())
                 .location(req.getLocation())
+                .detailLocation(req.getDetailLocation())
                 .information(req.getInformation())
                 .type(NoticeType.PRIVATE)
                 .user(user)
@@ -385,6 +389,7 @@ public class NoticeServiceImpl implements NoticeService {
                     .startAt(notice.getStartAt())
                     .endAt(notice.getEndAt())
                     .location(notice.getLocation())
+                    .detailLocation(notice.getDetailLocation())
                     .approved(notice.isApproved())
                     .imageUrls(imageUrls.getOrDefault(notice.getId(), List.of()))
                     .build();
