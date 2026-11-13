@@ -16,6 +16,7 @@ public class NoticeListRes {
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     private Location location;
+    private String detailLocation;
     private boolean approved;
     private List<String> imageUrls;
 

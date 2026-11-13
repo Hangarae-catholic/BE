@@ -39,6 +39,8 @@ public class Notice extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Location location;
 
+    private String detailLocation;
+
     private String responsible;
 
     @Column(length = 500)
@@ -68,12 +70,13 @@ public class Notice extends BaseEntity {
     private User user;
 
     @Builder
-    public Notice(String name, LocalDateTime startAt, LocalDateTime endAt, String information, Location location, String responsible, String url, NoticeType type, NoticeCategory category, NoticeScheduleType scheduleType, Department department, User user) {
+    public Notice(String name, LocalDateTime startAt, LocalDateTime endAt, String information, Location location, String detailLocation, String responsible, String url, NoticeType type, NoticeCategory category, NoticeScheduleType scheduleType, Department department, User user) {
         this.name = name;
         this.startAt = startAt;
         this.endAt = endAt;
         this.information = information;
         this.location = location;
+        this.detailLocation = detailLocation;
         this.responsible = responsible;
         this.url = url;
         this.type = type;

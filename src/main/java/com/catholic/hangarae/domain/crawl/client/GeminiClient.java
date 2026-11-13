@@ -119,6 +119,11 @@ public class GeminiClient {
                     .findFirst()
                     .orElse(null);
         }
+        // 건물이 정해진 행사만 상세 주소 저장
+        String detailLocation = result.path("detail_location").asString().strip();
+        if (location == null || detailLocation.isBlank()) {
+            detailLocation = null;
+        }
 
         // 날짜가 있는 공지만 행사 또는 일정으로 구분
         NoticeScheduleType noticeScheduleType = null;
@@ -131,6 +136,7 @@ public class GeminiClient {
                 .startDate(startDate)
                 .endDate(endDate)
                 .location(location)
+                .detailLocation(cut(detailLocation, 255))
                 .scheduleType(noticeScheduleType)
                 .responsible(cut(responsible.isBlank() ? notice.getWriter() : responsible, 255))
                 .build();
@@ -151,6 +157,7 @@ public class GeminiClient {
                 - attendance: IN_PERSON=학생이 교내 장소에 직접 모여 참여, ONLINE=온라인 참여, NOT_EVENT=신청, 제출, 안내만 있고 모이는 행사가 아님. 시험, 수업, 강의실 변경도 행사가 아님
                 - location: 행사가 열리는 건물이 아래 목록에 있으면 해당 값, 없으면 NONE. 접수처, 제출처, 문의처, 사무실 위치는 행사 장소가 아님
                   %s
+                - detail_location: location이 NONE이 아닐 때 본문에 적힌 행사 장소의 호실, 층, 세부 장소(예: K201호, 2층 대강당). 건물 이름은 빼고, 없거나 location이 NONE이면 빈 문자열
                 - responsible: 본문에 적힌 주최 또는 주관 기관, 게시 학과나 작성자로 추측하지 않음. 본문에 없으면 빈 문자열
 
                 제목: %s
@@ -175,6 +182,7 @@ public class GeminiClient {
         fields.put("end_date", Map.of("type", "string"));
         fields.put("attendance", Map.of("type", "string", "enum", List.of("IN_PERSON", "ONLINE", "NOT_EVENT")));
         fields.put("location", Map.of("type", "string", "enum", locations));
+        fields.put("detail_location", Map.of("type", "string"));
         fields.put("responsible", Map.of("type", "string"));
         return Map.of("type", "object", "properties", fields, "required", List.copyOf(fields.keySet()));
     }

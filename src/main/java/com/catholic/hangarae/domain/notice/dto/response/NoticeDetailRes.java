@@ -21,6 +21,7 @@ public class NoticeDetailRes {
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     private Location location;
+    private String detailLocation;
     private String responsible;
     private String information;
     private String url;
