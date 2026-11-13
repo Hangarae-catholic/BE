@@ -29,6 +29,7 @@ public class TeamResponse{
         private Integer maxMember;
         private Integer remainingMember;
 
+        private Long userId;
         private String userName;
         private StudentStatus studentStatus;
         private DepartmentType department;
