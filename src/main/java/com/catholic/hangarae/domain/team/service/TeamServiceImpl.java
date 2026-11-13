@@ -131,6 +131,7 @@ public class TeamServiceImpl implements TeamService {
                 .endAt(team.getEndAt())
                 .maxMember(team.getMaxMember())
                 .remainingMember(team.getRemainingMember())
+                .userId(user.getId())
                 .userName(user.getName())
                 .studentStatus(user.getStatus())
                 .character(user.getCharacter())
