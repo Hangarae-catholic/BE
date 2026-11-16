@@ -1,7 +1,9 @@
 package com.catholic.hangarae.domain.calendar.controller;
 
-import com.catholic.hangarae.domain.calendar.dto.request.CalendarRequest;
-import com.catholic.hangarae.domain.calendar.dto.response.CalendarResponse;
+import com.catholic.hangarae.domain.calendar.dto.request.CalendarAcademicReq;
+import com.catholic.hangarae.domain.calendar.dto.request.CalendarListReq;
+import com.catholic.hangarae.domain.calendar.dto.response.CalendarAcademicRes;
+import com.catholic.hangarae.domain.calendar.dto.response.CalendarNoticeRes;
 import com.catholic.hangarae.domain.calendar.service.CalendarService;
 import com.catholic.hangarae.global.apiPayLoad.response.Response;
 import com.catholic.hangarae.global.apiPayLoad.result.CalendarResultCode;
@@ -27,15 +29,15 @@ public class CalendarController {
 
     @GetMapping
     @Operation(summary = "월별 캘린더 조회", description = "계열과 일정 유형을 각각 1~2개 선택 후 조회합니다. 상세는 /api/notices/{noticeId}로 조회")
-    public Response<List<CalendarResponse.NoticeRes>> getCalendar(
-            @AuthUser Long userId, @Valid @ModelAttribute CalendarRequest.ListReq request) {
+    public Response<List<CalendarNoticeRes>> getCalendar(
+            @AuthUser Long userId, @Valid @ModelAttribute CalendarListReq request) {
         return Response.of(CalendarResultCode.CALENDAR_LIST_OK, calendarService.getCalendar(userId, request));
     }
 
     @GetMapping("/academic")
     @Operation(summary = "월별 학사일정 조회", description = "가톨릭대 성심교정 학사일정 중 선택한 월과 기간이 겹치는 일정을 조회합니다. 현재 2026년만 제공")
-    public Response<List<CalendarResponse.AcademicRes>> getAcademicCalendar(
-            @Valid @ModelAttribute CalendarRequest.AcademicReq request) {
+    public Response<List<CalendarAcademicRes>> getAcademicCalendar(
+            @Valid @ModelAttribute CalendarAcademicReq request) {
         return Response.of(CalendarResultCode.ACADEMIC_CALENDAR_LIST_OK, calendarService.getAcademicCalendar(request));
     }
 }

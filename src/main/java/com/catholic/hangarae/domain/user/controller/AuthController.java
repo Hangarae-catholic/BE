@@ -1,6 +1,7 @@
 package com.catholic.hangarae.domain.user.controller;
 
-import com.catholic.hangarae.domain.user.dto.request.AuthRequest;
+import com.catholic.hangarae.domain.user.dto.request.LoginReq;
+import com.catholic.hangarae.domain.user.dto.request.SignUpReq;
 import com.catholic.hangarae.domain.user.dto.request.EmailCodeSendReq;
 import com.catholic.hangarae.domain.user.dto.request.FindIdReq;
 import com.catholic.hangarae.domain.user.dto.request.FindIdSendReq;
@@ -48,7 +49,7 @@ public class AuthController {
 
     @PostMapping("/sign-up")
     @Operation(summary = "회원가입", description = "새로운 회원 등록")
-    public ResponseEntity<Response<TokenRes>> signUp(@RequestBody @Valid AuthRequest.SignUpReq request) {
+    public ResponseEntity<Response<TokenRes>> signUp(@RequestBody @Valid SignUpReq request) {
         TokenRes response = authService.signUp(request);
         return ResponseEntity.status(UserResultCode.USER_SIGNUP_OK.getHttpStatus())
                 .body(Response.ok(UserResultCode.USER_SIGNUP_OK, response));
@@ -103,7 +104,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "로그인시 엑세스 토큰과 리프레쉬 토큰을 발급합니다.")
-    public Response<TokenRes> login(@RequestBody @Valid AuthRequest.LoginReq request) {
+    public Response<TokenRes> login(@RequestBody @Valid LoginReq request) {
         TokenRes response= authService.login(request);
         return Response.ok(UserResultCode.USER_LOGIN_OK, response);
     }

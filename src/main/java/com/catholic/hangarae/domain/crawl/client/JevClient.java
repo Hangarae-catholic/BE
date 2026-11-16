@@ -79,9 +79,9 @@ public class JevClient {
 
         // 공지 원문
         Map<String, Object> state = new LinkedHashMap<>();
-        state.put("title", notice.getName());
-        state.put("content", notice.getInformation());
-        state.put("source_department", Objects.toString(notice.getSourceDepartment(), "학교 공식 홈페이지"));
+        state.put("title", notice.name());
+        state.put("content", notice.information());
+        state.put("source_department", Objects.toString(notice.sourceDepartment(), "학교 공식 홈페이지"));
 
         // 카테고리 하나와 관심 분야 20개 질문
         Map<String, Object> questions = new LinkedHashMap<>();

@@ -1,7 +1,8 @@
 package com.catholic.hangarae.domain.user.controller;
 
-import com.catholic.hangarae.domain.user.dto.request.UserRequest;
-import com.catholic.hangarae.domain.user.dto.response.UserResponse;
+import com.catholic.hangarae.domain.user.dto.request.ProfileReq;
+import com.catholic.hangarae.domain.user.dto.response.ProfileOptionsRes;
+import com.catholic.hangarae.domain.user.dto.response.ProfileRes;
 import com.catholic.hangarae.domain.user.service.UserService;
 import com.catholic.hangarae.global.apiPayLoad.response.Response;
 import com.catholic.hangarae.global.apiPayLoad.result.UserResultCode;
@@ -29,24 +30,24 @@ public class UserController {
 
     @PostMapping("/profile")
     @Operation(summary = "프로필 생성")
-    public ResponseEntity<Response<UserResponse.ProfileRes>> createProfile(
-            @AuthUser Long userId, @RequestBody @Valid UserRequest.ProfileReq request) {
-        UserResponse.ProfileRes response = userService.createProfile(userId, request);
+    public ResponseEntity<Response<ProfileRes>> createProfile(
+            @AuthUser Long userId, @RequestBody @Valid ProfileReq request) {
+        ProfileRes response = userService.createProfile(userId, request);
         return ResponseEntity.status(UserResultCode.USER_PROFILE_CREATE_OK.getHttpStatus())
                 .body(Response.ok(UserResultCode.USER_PROFILE_CREATE_OK, response));
     }
 
     @GetMapping("/profile")
     @Operation(summary = "내 프로필 조회")
-    public Response<UserResponse.ProfileRes> getProfile(@AuthUser Long userId) {
+    public Response<ProfileRes> getProfile(@AuthUser Long userId) {
         return Response.ok(UserResultCode.USER_PROFILE_GET_OK, userService.getProfile(userId));
     }
 
     @PutMapping("/profile")
     @Operation(summary = "프로필 수정", description = "전체 프로필을 전달하며, 목록에서 뺀 추가 전공과 관심 분야는 삭제합니다.")
-    public Response<UserResponse.ProfileRes> updateProfile(
-            @AuthUser Long userId, @RequestBody @Valid UserRequest.ProfileReq request) {
-        UserResponse.ProfileRes response = userService.updateProfile(userId, request);
+    public Response<ProfileRes> updateProfile(
+            @AuthUser Long userId, @RequestBody @Valid ProfileReq request) {
+        ProfileRes response = userService.updateProfile(userId, request);
         return Response.ok(UserResultCode.USER_PROFILE_UPDATE_OK, response);
     }
 
@@ -66,7 +67,7 @@ public class UserController {
 
     @GetMapping("/profile/options")
     @Operation(summary = "프로필 선택 항목 조회", description = "캐릭터, 학적, 계열별 학과와 관심 분야 목록을 조회합니다.")
-    public Response<UserResponse.ProfileOptionsRes> getProfileOptions() {
+    public Response<ProfileOptionsRes> getProfileOptions() {
         return Response.ok(UserResultCode.USER_PROFILE_OPTIONS_OK, userService.getProfileOptions());
     }
 }

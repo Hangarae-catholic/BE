@@ -97,7 +97,7 @@ public class GeminiClient {
             // 마감일만 있으면 게시일부터 마감일까지
             LocalDate deadline = endDate == null ? startDate : endDate;
             endDate = deadline;
-            startDate = deadline == null || deadline.isBefore(notice.getPublishedAt()) ? deadline : notice.getPublishedAt();
+            startDate = deadline == null || deadline.isBefore(notice.publishedAt()) ? deadline : notice.publishedAt();
         } else if ("EVENT".equals(scheduleType) && endDate == null) {
             endDate = startDate;
         } else if (!"PERIOD".equals(scheduleType) && !"EVENT".equals(scheduleType)) {
@@ -132,13 +132,13 @@ public class GeminiClient {
         }
 
         return GeminiDescribeRes.builder()
-                .information(information.isBlank() ? notice.getInformation() : information)
+                .information(information.isBlank() ? notice.information() : information)
                 .startDate(startDate)
                 .endDate(endDate)
                 .location(location)
                 .detailLocation(cut(detailLocation, 255))
                 .scheduleType(noticeScheduleType)
-                .responsible(cut(responsible.isBlank() ? notice.getWriter() : responsible, 255))
+                .responsible(cut(responsible.isBlank() ? notice.writer() : responsible, 255))
                 .build();
     }
 
@@ -166,9 +166,9 @@ public class GeminiClient {
                 작성자: %s
                 본문:
                 %s
-                """.formatted(buildings, notice.getName(), notice.getPublishedAt(),
-                Objects.toString(notice.getSourceDepartment(), "없음"), notice.getWriter(),
-                notice.getInformation());
+                """.formatted(buildings, notice.name(), notice.publishedAt(),
+                Objects.toString(notice.sourceDepartment(), "없음"), notice.writer(),
+                notice.information());
     }
 
     // 응답 JSON 스키마, nullable 대신 빈 문자열과 NONE 사용

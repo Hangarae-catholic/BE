@@ -4,8 +4,11 @@ package com.catholic.hangarae.domain.team.service;
 import com.catholic.hangarae.domain.department.vo.DepartmentType;
 import com.catholic.hangarae.domain.image.entity.Image;
 import com.catholic.hangarae.domain.image.repository.ImageRepository;
-import com.catholic.hangarae.domain.team.dto.request.TeamRequest;
-import com.catholic.hangarae.domain.team.dto.response.TeamResponse;
+import com.catholic.hangarae.domain.team.dto.request.TeamCreateReq;
+import com.catholic.hangarae.domain.team.dto.request.TeamUpdateReq;
+import com.catholic.hangarae.domain.team.dto.response.TeamContactRes;
+import com.catholic.hangarae.domain.team.dto.response.TeamDetailRes;
+import com.catholic.hangarae.domain.team.dto.response.TeamListRes;
 import com.catholic.hangarae.domain.team.entity.Team;
 import com.catholic.hangarae.domain.team.entity.TeamContact;
 import com.catholic.hangarae.domain.team.entity.TeamImage;
@@ -49,18 +52,18 @@ public class TeamServiceImpl implements TeamService {
     // 팀 생성
     @Transactional
     @Override
-    public Long createTeam(Long userId, TeamRequest.CreateReq req) {
+    public Long createTeam(Long userId, TeamCreateReq req) {
 
         User user=userRepository.findById(userId)
                 .orElseThrow(()-> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
         Team team = Team.builder()
-                .title(req.getTitle())
-                .startAt(req.getStartAt())
-                .endAt(req.getEndAt())
-                .maxMember(req.getMaxMember())
-                .category(req.getCategory())
-                .detail(req.getDetail())
+                .title(req.title())
+                .startAt(req.startAt())
+                .endAt(req.endAt())
+                .maxMember(req.maxMember())
+                .category(req.category())
+                .detail(req.detail())
                 .user(user)
                 .build();
         Team savedTeam = teamRepository.save(team);
@@ -73,18 +76,18 @@ public class TeamServiceImpl implements TeamService {
         userTeamRepository.save(userTeam);
 
         // 연락수단
-        List<TeamContact> contacts = req.getContacts().stream()
+        List<TeamContact> contacts = req.contacts().stream()
                 .map(contact -> TeamContact.builder()
                         .team(savedTeam)
-                        .type(contact.getType())
-                        .url(contact.getUrl())
+                        .type(contact.type())
+                        .url(contact.url())
                         .build())
                 .toList();
         teamContactRepository.saveAll(contacts);
 
         // 이미지
-        if (req.getImageUrls() != null) {
-            req.getImageUrls().forEach(imageUrl -> {
+        if (req.imageUrls() != null) {
+            req.imageUrls().forEach(imageUrl -> {
                 Image image = imageRepository.save(Image.builder().url(imageUrl).build());
                 TeamImage teamImage = TeamImage.builder().team(savedTeam).image(image).build();
                 teamImageRepository.save(teamImage);
@@ -98,7 +101,7 @@ public class TeamServiceImpl implements TeamService {
     // 팀 상세조회
     @Transactional(readOnly = true)
     @Override
-    public TeamResponse.DetailRes getTeamDetail(Long teamId) {
+    public TeamDetailRes getTeamDetail(Long teamId) {
 
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new BusinessException(TeamErrorCode.TEAM_NOT_FOUND));
@@ -110,9 +113,9 @@ public class TeamServiceImpl implements TeamService {
                 .orElse(null);
 
         // 연락수단
-        List<TeamResponse.ContactRes> contacts = teamContactRepository.findAllByTeamId(teamId)
+        List<TeamContactRes> contacts = teamContactRepository.findAllByTeamId(teamId)
                 .stream()
-                .map(contact -> TeamResponse.ContactRes.builder()
+                .map(contact -> TeamContactRes.builder()
                         .type(contact.getType())
                         .url(contact.getUrl())
                         .build())
@@ -124,7 +127,7 @@ public class TeamServiceImpl implements TeamService {
                 .map(teamImage -> teamImage.getImage().getUrl())
                 .toList();
 
-        TeamResponse.DetailRes detailRes = TeamResponse.DetailRes.builder()
+        TeamDetailRes detailRes = TeamDetailRes.builder()
                 .teamId(team.getId())
                 .title(team.getTitle())
                 .startAt(team.getStartAt())
@@ -145,7 +148,7 @@ public class TeamServiceImpl implements TeamService {
         return detailRes;
     }
 
-    private TeamResponse.ListRes toListRes(Team team) {
+    private TeamListRes toListRes(Team team) {
         User user = team.getUser();
 
         DepartmentType department = userDepartmentRepository
@@ -158,7 +161,7 @@ public class TeamServiceImpl implements TeamService {
                 .map(teamImage -> teamImage.getImage().getUrl())
                 .orElse(null);
 
-        return TeamResponse.ListRes.builder()
+        return TeamListRes.builder()
                 .teamId(team.getId())
                 .title(team.getTitle())
                 .startAt(team.getStartAt())
@@ -179,7 +182,7 @@ public class TeamServiceImpl implements TeamService {
     // 팀 리스트 조회 - RECRUITING 먼저 조회 / 검색 / 카테고리 별 조회
     @Transactional(readOnly = true)
     @Override
-    public List<TeamResponse.ListRes> getTeams(TeamCategory category, String keyword, boolean latestFirst) {
+    public List<TeamListRes> getTeams(TeamCategory category, String keyword, boolean latestFirst) {
         if (keyword != null && keyword.isBlank()) {
             keyword = null;
         }
@@ -216,7 +219,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Transactional
     @Override
-    public Long updateTeam(Long userId, Long teamId, TeamRequest.UpdateReq req) {
+    public Long updateTeam(Long userId, Long teamId, TeamUpdateReq req) {
 
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new BusinessException(TeamErrorCode.TEAM_NOT_FOUND));
@@ -228,27 +231,27 @@ public class TeamServiceImpl implements TeamService {
             throw new BusinessException(TeamErrorCode.WRITER_DIFFERENCE);
         }
 
-        if (req.getRemainingMember() > team.getMaxMember()) {
+        if (req.remainingMember() > team.getMaxMember()) {
             throw new BusinessException(TeamErrorCode.INVALID_REMAINING_MEMBER);
         }
 
         team.update(
-                req.getTitle(),
-                req.getStartAt(),
-                req.getEndAt(),
-                req.getRemainingMember(),
-                req.getCategory(),
-                req.getDetail()
+                req.title(),
+                req.startAt(),
+                req.endAt(),
+                req.remainingMember(),
+                req.category(),
+                req.detail()
         );
 
         // 연락수단 수정
         teamContactRepository.deleteAllByTeamId(teamId);
 
-        List<TeamContact> contacts = req.getContacts().stream()
+        List<TeamContact> contacts = req.contacts().stream()
                 .map(contact -> TeamContact.builder()
                         .team(team)
-                        .type(contact.getType())
-                        .url(contact.getUrl())
+                        .type(contact.type())
+                        .url(contact.url())
                         .build())
                 .toList();
         teamContactRepository.saveAll(contacts);
@@ -262,8 +265,8 @@ public class TeamServiceImpl implements TeamService {
                 imageRepository.delete(teamImage.getImage()));
 
         // 이미지 새로 저장
-        if (req.getImageUrls() != null) {
-            req.getImageUrls().forEach(imageUrl -> {
+        if (req.imageUrls() != null) {
+            req.imageUrls().forEach(imageUrl -> {
                 Image image = imageRepository.save(Image.builder()
                         .url(imageUrl).build());
                 TeamImage teamImage = TeamImage.builder()
@@ -289,7 +292,7 @@ public class TeamServiceImpl implements TeamService {
     // 사용자가 작성한 팀 리스트 조회
     @Override
     @Transactional(readOnly = true)
-    public List<TeamResponse.ListRes> getMyTeams(Long userId) {
+    public List<TeamListRes> getMyTeams(Long userId) {
         List<Team> teams = teamRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
         return teams.stream()
                 .map(this::toListRes)

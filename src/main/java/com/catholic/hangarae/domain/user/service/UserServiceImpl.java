@@ -6,8 +6,11 @@ import com.catholic.hangarae.domain.department.vo.DepartmentType;
 import com.catholic.hangarae.domain.interest.entity.Interest;
 import com.catholic.hangarae.domain.interest.repository.InterestRepository;
 import com.catholic.hangarae.domain.interest.vo.InterestType;
-import com.catholic.hangarae.domain.user.dto.request.UserRequest;
-import com.catholic.hangarae.domain.user.dto.response.UserResponse;
+import com.catholic.hangarae.domain.user.dto.request.ProfileReq;
+import com.catholic.hangarae.domain.user.dto.response.DepartmentRes;
+import com.catholic.hangarae.domain.user.dto.response.InterestRes;
+import com.catholic.hangarae.domain.user.dto.response.ProfileOptionsRes;
+import com.catholic.hangarae.domain.user.dto.response.ProfileRes;
 import com.catholic.hangarae.domain.user.entity.User;
 import com.catholic.hangarae.domain.user.entity.UserDepartment;
 import com.catholic.hangarae.domain.user.entity.UserInterest;
@@ -40,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse.ProfileRes createProfile(Long userId, UserRequest.ProfileReq request) {
+    public ProfileRes createProfile(Long userId, ProfileReq request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
         if (user.getCharacter() != null) {
@@ -52,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponse.ProfileRes getProfile(Long userId) {
+    public ProfileRes getProfile(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
         checkProfileExists(user);
@@ -61,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse.ProfileRes updateProfile(Long userId, UserRequest.ProfileReq request) {
+    public ProfileRes updateProfile(Long userId, ProfileReq request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
         checkProfileExists(user);
@@ -90,24 +93,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponse.ProfileOptionsRes getProfileOptions() {
+    public ProfileOptionsRes getProfileOptions() {
         // 선택 가능한 학과
-        List<UserResponse.DepartmentRes> departments = new ArrayList<>();
+        List<DepartmentRes> departments = new ArrayList<>();
         for (Department department : departmentRepository.findAll()) {
-            departments.add(UserResponse.DepartmentRes.builder()
+            departments.add(DepartmentRes.builder()
                     .name(department.getName())
                     .division(department.getDivision())
                     .build());
         }
 
         // 선택 가능한 관심 분야
-        List<UserResponse.InterestRes> interests = new ArrayList<>();
+        List<InterestRes> interests = new ArrayList<>();
         for (Interest interest : interestRepository.findAll()) {
-            interests.add(UserResponse.InterestRes.builder()
+            interests.add(InterestRes.builder()
                     .name(interest.getName())
                     .build());
         }
-        return UserResponse.ProfileOptionsRes.builder()
+        return ProfileOptionsRes.builder()
                 .characters(Arrays.asList(UserCharacter.values()))
                 .statuses(Arrays.asList(StudentStatus.values()))
                 .departments(departments)
@@ -115,21 +118,21 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    private void saveProfile(User user, UserRequest.ProfileReq request) {
-        if (userRepository.existsByNicknameAndIdNot(request.getNickname(), user.getId())) {
+    private void saveProfile(User user, ProfileReq request) {
+        if (userRepository.existsByNicknameAndIdNot(request.nickname(), user.getId())) {
             throw new BusinessException(UserErrorCode.NICKNAME_ALREADY_EXIST);
         }
         // 전공 조회와 검증
-        Department primary = findDepartment(request.getPrimaryDepartment());
-        Department doubleMajor = findDepartment(request.getDoubleMajorDepartment());
-        Department minor = findDepartment(request.getMinorDepartment());
+        Department primary = findDepartment(request.primaryDepartment());
+        Department doubleMajor = findDepartment(request.doubleMajorDepartment());
+        Department minor = findDepartment(request.minorDepartment());
         validateDepartments(primary, doubleMajor, minor);
-        List<Interest> interests = validateInterests(request.getInterests());
+        List<Interest> interests = validateInterests(request.interests());
 
         // 목록에서 제외한 추가 전공과 관심 분야는 삭제
         userDepartmentRepository.deleteAllByUserId(user.getId());
         userInterestRepository.deleteAllByUserId(user.getId());
-        user.updateProfile(request.getNickname(), request.getCharacter(), request.getStatus());
+        user.updateProfile(request.nickname(), request.character(), request.status());
         userRepository.saveAndFlush(user);
         // 전공 구분은 서버에서 지정
         saveDepartment(user, primary, UserDepartmentType.PRIMARY);
@@ -194,12 +197,12 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
-    private UserResponse.ProfileRes toProfileRes(User user) {
+    private ProfileRes toProfileRes(User user) {
         // 저장된 전공 정보
-        List<UserResponse.DepartmentRes> departments = new ArrayList<>();
+        List<DepartmentRes> departments = new ArrayList<>();
         for (UserDepartment item : userDepartmentRepository.findAllByUserIdOrderByIdAsc(user.getId())) {
             Department department = item.getDepartment();
-            departments.add(UserResponse.DepartmentRes.builder()
+            departments.add(DepartmentRes.builder()
                     .name(department.getName())
                     .division(department.getDivision())
                     .type(item.getType())
@@ -207,13 +210,13 @@ public class UserServiceImpl implements UserService {
         }
 
         // 저장된 관심 분야
-        List<UserResponse.InterestRes> interests = new ArrayList<>();
+        List<InterestRes> interests = new ArrayList<>();
         for (UserInterest item : userInterestRepository.findAllByUserIdOrderByIdAsc(user.getId())) {
-            interests.add(UserResponse.InterestRes.builder()
+            interests.add(InterestRes.builder()
                     .name(item.getInterest().getName())
                     .build());
         }
-        return UserResponse.ProfileRes.builder()
+        return ProfileRes.builder()
                 .userId(user.getId())
                 .name(user.getName())
                 .nickname(user.getNickname())

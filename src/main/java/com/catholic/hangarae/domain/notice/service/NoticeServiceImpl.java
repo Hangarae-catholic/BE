@@ -260,20 +260,20 @@ public class NoticeServiceImpl implements NoticeService {
 
 
         Notice notice = Notice.builder()
-                .name(req.getName())
-                .responsible(req.getResponsible())
-                .startAt(req.getStartAt())
-                .endAt(req.getEndAt())
-                .location(req.getLocation())
-                .detailLocation(req.getDetailLocation())
-                .information(req.getInformation())
+                .name(req.name())
+                .responsible(req.responsible())
+                .startAt(req.startAt())
+                .endAt(req.endAt())
+                .location(req.location())
+                .detailLocation(req.detailLocation())
+                .information(req.information())
                 .type(NoticeType.PRIVATE)
                 .user(user)
                 .build();
         Notice savedNotice = noticeRepository.save(notice);
 
-        if (req.getImageUrls() != null) {
-            req.getImageUrls().forEach(imageUrl -> {
+        if (req.imageUrls() != null) {
+            req.imageUrls().forEach(imageUrl -> {
                 Image image = imageRepository.save(Image.builder().url(imageUrl).build());
                 NoticeImage noticeImage = NoticeImage.builder().notice(savedNotice).image(image).build();
                 noticeImageRepository.save(noticeImage);
@@ -327,7 +327,7 @@ public class NoticeServiceImpl implements NoticeService {
         if (existingReaction.isEmpty()) { // 처음 선택한 경우
 
             NoticeReaction reaction = NoticeReaction.builder()
-                    .type(req.getType())
+                    .type(req.type())
                     .user(user)
                     .notice(notice)
                     .build();
@@ -336,12 +336,12 @@ public class NoticeServiceImpl implements NoticeService {
         } else { // 선택된 적이 있는 경우
 
             NoticeReaction reaction = existingReaction.get();
-            if (reaction.getType() == req.getType()) {
+            if (reaction.getType() == req.type()) {
                 // 같은 버튼 누른 경우 - 취소
                 noticeReactionRepository.delete(reaction);
             } else {
                 // 다른 버튼 누른 경우 - 변경
-                reaction.updateType(req.getType());
+                reaction.updateType(req.type());
             }
         }
 

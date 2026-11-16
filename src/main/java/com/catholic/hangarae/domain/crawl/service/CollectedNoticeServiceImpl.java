@@ -53,29 +53,29 @@ public class CollectedNoticeServiceImpl implements CollectedNoticeService {
     public Long save(SchoolNoticeRes data, JevClassifyRes classification, GeminiDescribeRes description) {
         // 학과 게시판 공지는 해당 학과 대상, 학교 홈페이지 공지는 전교생 대상
         Department department = null;
-        if (data.getDepartmentType() != null) {
-            department = departmentRepository.findByName(data.getDepartmentType())
+        if (data.departmentType() != null) {
+            department = departmentRepository.findByName(data.departmentType())
                     .orElseThrow(() -> new BusinessException(CrawlErrorCode.DEPARTMENT_NOT_FOUND));
         }
 
         // 원문 정보로 공지 생성, 제미나이 결과가 있으면 요약 정보로 채움
         Notice.NoticeBuilder builder = Notice.builder()
                 .type(NoticeType.SCHOOL)
-                .url(data.getUrl())
-                .name(data.getName())
-                .information(data.getInformation())
-                .responsible(data.getWriter())
-                .category(classification.getCategory())
+                .url(data.url())
+                .name(data.name())
+                .information(data.information())
+                .responsible(data.writer())
+                .category(classification.category())
                 .department(department);
         if (description != null) {
-            builder.information(description.getInformation())
-                    .responsible(description.getResponsible())
-                    .location(description.getLocation())
-                    .detailLocation(description.getDetailLocation())
-                    .scheduleType(description.getScheduleType());
-            if (description.getStartDate() != null) {
-                builder.startAt(description.getStartDate().atStartOfDay())
-                        .endAt(description.getEndDate().atTime(LocalTime.of(23, 59, 59)));
+            builder.information(description.information())
+                    .responsible(description.responsible())
+                    .location(description.location())
+                    .detailLocation(description.detailLocation())
+                    .scheduleType(description.scheduleType());
+            if (description.startDate() != null) {
+                builder.startAt(description.startDate().atStartOfDay())
+                        .endAt(description.endDate().atTime(LocalTime.of(23, 59, 59)));
             }
         }
         Notice notice = builder.build();
@@ -85,7 +85,7 @@ public class CollectedNoticeServiceImpl implements CollectedNoticeService {
 
         // 추천 순위에 쓰도록 관심 분야 점수는 모두 저장
         for (Interest interest : interestRepository.findAll()) {
-            Double score = classification.getInterests().get(interest.getName());
+            Double score = classification.interests().get(interest.getName());
             if (score != null) {
                 NoticeInterest noticeInterest = NoticeInterest.builder()
                         .notice(notice)
@@ -97,7 +97,7 @@ public class CollectedNoticeServiceImpl implements CollectedNoticeService {
         }
 
         // 재시도에 성공하면 실패 기록 삭제
-        noticeFailureRepository.deleteByUrl(data.getUrl());
+        noticeFailureRepository.deleteByUrl(data.url());
         return notice.getId();
     }
 

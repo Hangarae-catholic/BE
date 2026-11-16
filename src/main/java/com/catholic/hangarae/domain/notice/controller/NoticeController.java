@@ -6,7 +6,6 @@ import com.catholic.hangarae.domain.notice.dto.response.NoticeDetailRes;
 import com.catholic.hangarae.domain.notice.dto.response.NoticeListRes;
 import com.catholic.hangarae.domain.notice.dto.response.NoticeReactionRes;
 import com.catholic.hangarae.domain.notice.service.NoticeService;
-import com.catholic.hangarae.domain.team.dto.response.TeamResponse;
 import com.catholic.hangarae.global.apiPayLoad.response.Response;
 import com.catholic.hangarae.global.apiPayLoad.result.NoticeResultCode;
 import com.catholic.hangarae.global.apiPayLoad.result.TeamResultCode;

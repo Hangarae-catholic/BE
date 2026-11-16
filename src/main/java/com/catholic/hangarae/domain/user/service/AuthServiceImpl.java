@@ -1,6 +1,7 @@
 package com.catholic.hangarae.domain.user.service;
 
-import com.catholic.hangarae.domain.user.dto.request.AuthRequest;
+import com.catholic.hangarae.domain.user.dto.request.LoginReq;
+import com.catholic.hangarae.domain.user.dto.request.SignUpReq;
 import com.catholic.hangarae.domain.user.dto.request.FindIdReq;
 import com.catholic.hangarae.domain.user.dto.request.PasswordResetReq;
 import com.catholic.hangarae.domain.user.dto.request.VerifyCodeReq;
@@ -64,11 +65,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public TokenRes signUp(AuthRequest.SignUpReq request) {
+    public TokenRes signUp(SignUpReq request) {
         validateSignUpRequest(request);
 
         // 이메일을 로그인 아이디로 사용
-        String email = request.getLoginId();
+        String email = request.loginId();
         if (userRepository.existsByEmail(email)) {
             throw new BusinessException(AuthErrorCode.EMAIL_ALREADY_EXIST);
         }
@@ -76,11 +77,11 @@ public class AuthServiceImpl implements AuthService {
         // 이메일 인증을 마쳤는지 확인
         emailVerificationService.checkVerified(email, VerificationType.JOIN);
 
-        String encodedPassword=passwordEncoder.encode(request.getPassword());
+        String encodedPassword=passwordEncoder.encode(request.password());
 
         User user=User.createLocalUser(
                 email,
-                request.getName(),
+                request.name(),
                 email,
                 encodedPassword
         );
@@ -183,15 +184,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(noRollbackFor = BusinessException.class)
-    public TokenRes login(AuthRequest.LoginReq request) {
-        User user=userRepository.findUserByLoginId(request.getLoginId())
+    public TokenRes login(LoginReq request) {
+        User user=userRepository.findUserByLoginId(request.loginId())
                 .orElseThrow(()-> new BusinessException(AuthErrorCode.PASSWORD_UNMATCH_ERROR));
 
         if (user.isLoginRestricted()) {
             throw new BusinessException(AuthErrorCode.LOGIN_RESTRICTED);
         }
 
-        if (user.getPassword() == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (user.getPassword() == null || !passwordEncoder.matches(request.password(), user.getPassword())) {
             user.recordLoginFailure();
             if (user.isLoginRestricted()) {
                 throw new BusinessException(AuthErrorCode.LOGIN_RESTRICTED);
@@ -235,17 +236,17 @@ public class AuthServiceImpl implements AuthService {
         userRepository.delete(user);
     }
 
-    private void validateSignUpRequest(AuthRequest.SignUpReq request) {
+    private void validateSignUpRequest(SignUpReq request) {
 
-        if (!PASSWORD_PATTERN.matcher(request.getPassword()).matches()) {
+        if (!PASSWORD_PATTERN.matcher(request.password()).matches()) {
             throw new BusinessException(AuthErrorCode.INVALID_PASSWORD_FORMAT);
         }
 
-        if(!request.getPassword().equals(request.getConfirmPassword())) {
+        if(!request.password().equals(request.confirmPassword())) {
             throw new BusinessException(AuthErrorCode.CONFIRM_PASSWORD_MISMATCH);
         }
 
-        if (!EMAIL_PATTERN.matcher(request.getLoginId()).matches()) {
+        if (!EMAIL_PATTERN.matcher(request.loginId()).matches()) {
             throw new BusinessException(AuthErrorCode.INVAILD_EMAIL_FORMAT);
         }
     }
