@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"status","code","message","data"})
+@JsonPropertyOrder({"httpStatus","code","message","data"})
 public class Response <T> {
 
     private final HttpStatus httpStatus;

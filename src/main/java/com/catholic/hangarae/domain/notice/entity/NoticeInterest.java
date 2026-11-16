@@ -2,7 +2,16 @@ package com.catholic.hangarae.domain.notice.entity;
 
 import com.catholic.hangarae.domain.interest.entity.Interest;
 import com.catholic.hangarae.global.apiPayLoad.common.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(name = "notice_interests")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NoticeInterest extends BaseEntity {
 
     @Id

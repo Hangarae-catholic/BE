@@ -1,6 +1,14 @@
 package com.catholic.hangarae.domain.user.controller;
 
-import com.catholic.hangarae.domain.user.dto.request.*;
+import com.catholic.hangarae.domain.user.dto.request.AuthRequest;
+import com.catholic.hangarae.domain.user.dto.request.EmailCodeSendReq;
+import com.catholic.hangarae.domain.user.dto.request.FindIdReq;
+import com.catholic.hangarae.domain.user.dto.request.FindIdSendReq;
+import com.catholic.hangarae.domain.user.dto.request.OAuthTicketReq;
+import com.catholic.hangarae.domain.user.dto.request.PasswordResetReq;
+import com.catholic.hangarae.domain.user.dto.request.PasswordResetSendReq;
+import com.catholic.hangarae.domain.user.dto.request.ReissueReq;
+import com.catholic.hangarae.domain.user.dto.request.VerifyCodeReq;
 import com.catholic.hangarae.domain.user.dto.response.FindIdRes;
 import com.catholic.hangarae.domain.user.dto.response.OAuthLoginRes;
 import com.catholic.hangarae.domain.user.dto.response.TokenRes;
@@ -18,7 +26,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")

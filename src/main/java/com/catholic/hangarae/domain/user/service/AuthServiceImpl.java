@@ -20,6 +20,7 @@ import com.catholic.hangarae.global.apiPayLoad.error.UserErrorCode;
 import com.catholic.hangarae.global.apiPayLoad.exception.BusinessException;
 import com.catholic.hangarae.global.security.jwt.JwtTokenProvider;
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
@@ -59,17 +61,6 @@ public class AuthServiceImpl implements AuthService {
     private String googleClientSecret;
     @Value("${google.redirect-uri}")
     private String googleRedirectUri;
-
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
-                           EntityManager entityManager, ProviderRepository providerRepository,
-                           EmailVerificationService emailVerificationService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.entityManager = entityManager;
-        this.providerRepository = providerRepository;
-        this.emailVerificationService = emailVerificationService;
-    }
 
     @Override
     @Transactional

@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Table(name = "email_verifications", uniqueConstraints = @UniqueConstraint(columnNames = {"email", "type"}))
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EmailVerification extends BaseEntity {
 
     private static final int VALID_MINUTES = 5;
