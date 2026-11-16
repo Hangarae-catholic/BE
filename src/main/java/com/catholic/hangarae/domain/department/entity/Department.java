@@ -3,7 +3,15 @@ package com.catholic.hangarae.domain.department.entity;
 import com.catholic.hangarae.domain.department.vo.DepartmentType;
 import com.catholic.hangarae.domain.department.vo.Division;
 import com.catholic.hangarae.global.apiPayLoad.common.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(name = "departments")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Department extends BaseEntity {
 
     // 학과

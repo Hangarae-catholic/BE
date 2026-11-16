@@ -40,13 +40,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(Response.fail(ex.getErrorCode()));
     }
 
-    @ExceptionHandler(GlobalExeception.class)
-    public ResponseEntity<Response<Void>> handleGlobalException(GlobalExeception ex) {
-        return ResponseEntity
-                .status(ex.getHttpStatus())
-                .body(Response.fail(ex.getErrorCode()));
-    }
-
     // ===================== Validation / 변환 오류 ======================
 
     @Override

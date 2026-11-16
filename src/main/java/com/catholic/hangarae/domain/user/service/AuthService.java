@@ -1,6 +1,7 @@
 package com.catholic.hangarae.domain.user.service;
 
-import com.catholic.hangarae.domain.user.dto.request.AuthRequest;
+import com.catholic.hangarae.domain.user.dto.request.LoginReq;
+import com.catholic.hangarae.domain.user.dto.request.SignUpReq;
 import com.catholic.hangarae.domain.user.dto.request.FindIdReq;
 import com.catholic.hangarae.domain.user.dto.request.PasswordResetReq;
 import com.catholic.hangarae.domain.user.dto.request.VerifyCodeReq;
@@ -10,7 +11,7 @@ import com.catholic.hangarae.domain.user.dto.response.OAuthUserInfo;
 import com.catholic.hangarae.domain.user.dto.response.TokenRes;
 
 public interface AuthService {
-    TokenRes signUp(AuthRequest.SignUpReq request);
+    TokenRes signUp(SignUpReq request);
     TokenRes reissue(String refreshToken);
 
     void sendJoinCode(String email);
@@ -22,7 +23,7 @@ public interface AuthService {
     void sendPasswordResetCode(String email);
     void resetPassword(PasswordResetReq request);
 
-    TokenRes login(AuthRequest.LoginReq request);
+    TokenRes login(LoginReq request);
     void logout(Long userId);
     void withdraw(Long userId);
 

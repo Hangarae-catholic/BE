@@ -1,15 +1,16 @@
 package com.catholic.hangarae.domain.user.service;
 
-import com.catholic.hangarae.domain.user.dto.request.UserRequest;
-import com.catholic.hangarae.domain.user.dto.response.UserResponse;
+import com.catholic.hangarae.domain.user.dto.request.ProfileReq;
+import com.catholic.hangarae.domain.user.dto.response.ProfileOptionsRes;
+import com.catholic.hangarae.domain.user.dto.response.ProfileRes;
 
 public interface UserService {
 
-    UserResponse.ProfileRes createProfile(Long userId, UserRequest.ProfileReq request);
-    UserResponse.ProfileRes getProfile(Long userId);
-    UserResponse.ProfileRes updateProfile(Long userId, UserRequest.ProfileReq request);
+    ProfileRes createProfile(Long userId, ProfileReq request);
+    ProfileRes getProfile(Long userId);
+    ProfileRes updateProfile(Long userId, ProfileReq request);
     void checkNickname(Long userId, String nickname);
 
     boolean checkProfile(Long userId);
-    UserResponse.ProfileOptionsRes getProfileOptions();
+    ProfileOptionsRes getProfileOptions();
 }
