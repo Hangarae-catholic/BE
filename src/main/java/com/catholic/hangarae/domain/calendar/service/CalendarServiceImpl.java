@@ -1,7 +1,9 @@
 package com.catholic.hangarae.domain.calendar.service;
 
-import com.catholic.hangarae.domain.calendar.dto.request.CalendarRequest;
-import com.catholic.hangarae.domain.calendar.dto.response.CalendarResponse;
+import com.catholic.hangarae.domain.calendar.dto.request.CalendarAcademicReq;
+import com.catholic.hangarae.domain.calendar.dto.request.CalendarListReq;
+import com.catholic.hangarae.domain.calendar.dto.response.CalendarAcademicRes;
+import com.catholic.hangarae.domain.calendar.dto.response.CalendarNoticeRes;
 import com.catholic.hangarae.domain.calendar.vo.AcademicSchedule;
 import com.catholic.hangarae.domain.notice.entity.Notice;
 import com.catholic.hangarae.domain.notice.repository.NoticeRepository;
@@ -29,32 +31,32 @@ public class CalendarServiceImpl implements CalendarService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CalendarResponse.NoticeRes> getCalendar(Long userId, CalendarRequest.ListReq request) {
+    public List<CalendarNoticeRes> getCalendar(Long userId, CalendarListReq request) {
         // 탈퇴한 회원은 조회 제외
         if (!userRepository.existsById(userId)) {
             throw new BusinessException(UserErrorCode.USER_NOT_FOUND);
         }
 
         // 계열과 일정 유형 중복 선택 확인
-        if (new HashSet<>(request.getDivisions()).size() != request.getDivisions().size()
-                || new HashSet<>(request.getCategories()).size() != request.getCategories().size()) {
+        if (new HashSet<>(request.divisions()).size() != request.divisions().size()
+                || new HashSet<>(request.categories()).size() != request.categories().size()) {
             throw new BusinessException(CalendarErrorCode.DUPLICATE_CALENDAR_FILTER);
         }
 
-        YearMonth month = YearMonth.of(request.getYear(), request.getMonth());
+        YearMonth month = YearMonth.of(request.year(), request.month());
         // 학교 일정 중 선택한 월과 필터에 해당하는 목록
         List<Notice> notices = noticeRepository.findCalendarNotices(
                 month.atDay(1).atStartOfDay(), month.plusMonths(1).atDay(1).atStartOfDay(),
-                NoticeType.SCHOOL, request.getDivisions(), request.getCategories(), userId);
+                NoticeType.SCHOOL, request.divisions(), request.categories(), userId);
 
         // 캘린더 응답 생성, 여러 학과 게시판에 올라온 같은 공지는 제목과 기간이 같으면 하나만 표시
-        List<CalendarResponse.NoticeRes> response = new ArrayList<>();
+        List<CalendarNoticeRes> response = new ArrayList<>();
         Set<String> shown = new HashSet<>();
         for (Notice notice : notices) {
             if (!shown.add(notice.getName() + "|" + notice.getStartAt() + "|" + notice.getEndAt())) {
                 continue;
             }
-            CalendarResponse.NoticeRes item = CalendarResponse.NoticeRes.builder()
+            CalendarNoticeRes item = CalendarNoticeRes.builder()
                     .noticeId(notice.getId())
                     .name(notice.getName())
                     .startAt(notice.getStartAt())
@@ -70,15 +72,15 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     @Override
-    public List<CalendarResponse.AcademicRes> getAcademicCalendar(CalendarRequest.AcademicReq request) {
-        YearMonth month = YearMonth.of(request.getYear(), request.getMonth());
+    public List<CalendarAcademicRes> getAcademicCalendar(CalendarAcademicReq request) {
+        YearMonth month = YearMonth.of(request.year(), request.month());
         // 선택한 월과 기간이 하루라도 겹치는 학사일정
-        List<CalendarResponse.AcademicRes> response = new ArrayList<>();
+        List<CalendarAcademicRes> response = new ArrayList<>();
         for (AcademicSchedule.Item item : AcademicSchedule.ITEMS) {
             if (item.startDate().isAfter(month.atEndOfMonth()) || item.endDate().isBefore(month.atDay(1))) {
                 continue;
             }
-            response.add(CalendarResponse.AcademicRes.builder()
+            response.add(CalendarAcademicRes.builder()
                     .name(item.name())
                     .startDate(item.startDate())
                     .endDate(item.endDate())

@@ -75,19 +75,19 @@ public class SchoolNoticeServiceImpl implements SchoolNoticeService {
                     && (properties.getMaxPages() == 0 || pageCount < properties.getMaxPages())) {
                 BoardPageRes page = schoolNoticeClient.parseList(schoolNoticeClient.fetch(url));
                 boolean hasRecent = false;
-                for (Map.Entry<Long, String> article : page.getArticles().entrySet()) {
+                for (Map.Entry<Long, String> article : page.articles().entrySet()) {
                     // 고정 공지는 페이지마다 반복되므로 처음 본 글만 기간을 판단
                     if (!articles.add(article.getKey())) {
                         continue;
                     }
-                    LocalDate publishedDate = page.getPublishedDates().get(article.getKey());
+                    LocalDate publishedDate = page.publishedDates().get(article.getKey());
                     if (publishedDate == null || !publishedDate.isBefore(cutoff)) {
                         hasRecent = true;
                         collectArticle(source, article.getKey(), article.getValue());
                     }
                 }
                 pageCount++;
-                url = hasRecent ? page.getNextUrl() : null;
+                url = hasRecent ? page.nextUrl() : null;
             }
             log.info("학교 공지 수집 완료, 게시판={}, 페이지={}, 확인 게시글={}", source.getKey(), pageCount, articles.size());
         } catch (InterruptedException exception) {

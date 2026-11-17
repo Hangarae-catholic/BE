@@ -3,7 +3,19 @@ package com.catholic.hangarae.domain.notice.entity;
 import com.catholic.hangarae.domain.notice.vo.NoticeReactionType;
 import com.catholic.hangarae.domain.user.entity.User;
 import com.catholic.hangarae.global.apiPayLoad.common.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +26,7 @@ import lombok.NoArgsConstructor;
         name = "notice_reaction",
         uniqueConstraints = @UniqueConstraint(name = "uk_notice_reaction_user_notice", columnNames = {"user_id", "notice_id"})
 )
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NoticeReaction extends BaseEntity {
 
     @Id

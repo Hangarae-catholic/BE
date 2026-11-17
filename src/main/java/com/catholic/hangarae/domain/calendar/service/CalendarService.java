@@ -1,13 +1,15 @@
 package com.catholic.hangarae.domain.calendar.service;
 
-import com.catholic.hangarae.domain.calendar.dto.request.CalendarRequest;
-import com.catholic.hangarae.domain.calendar.dto.response.CalendarResponse;
+import com.catholic.hangarae.domain.calendar.dto.request.CalendarAcademicReq;
+import com.catholic.hangarae.domain.calendar.dto.request.CalendarListReq;
+import com.catholic.hangarae.domain.calendar.dto.response.CalendarAcademicRes;
+import com.catholic.hangarae.domain.calendar.dto.response.CalendarNoticeRes;
 
 import java.util.List;
 
 public interface CalendarService {
 
-    List<CalendarResponse.NoticeRes> getCalendar(Long userId, CalendarRequest.ListReq request);
+    List<CalendarNoticeRes> getCalendar(Long userId, CalendarListReq request);
 
-    List<CalendarResponse.AcademicRes> getAcademicCalendar(CalendarRequest.AcademicReq request);
+    List<CalendarAcademicRes> getAcademicCalendar(CalendarAcademicReq request);
 }

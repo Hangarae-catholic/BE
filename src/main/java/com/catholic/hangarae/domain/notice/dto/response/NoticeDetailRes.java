@@ -7,30 +7,27 @@ import com.catholic.hangarae.domain.notice.vo.NoticeCategory;
 import com.catholic.hangarae.domain.notice.vo.NoticeScheduleType;
 import com.catholic.hangarae.domain.notice.vo.NoticeType;
 import lombok.Builder;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
 @Builder
-public class NoticeDetailRes {
-
-    private Long noticeId;
-    private String name;
-    private LocalDateTime startAt;
-    private LocalDateTime endAt;
-    private Location location;
-    private String detailLocation;
-    private String responsible;
-    private String information;
-    private String url;
-    private NoticeType type;
-    private NoticeCategory category;
-    private NoticeScheduleType scheduleType;
-    private boolean approved;
-    private Division division;
-    private DepartmentType department;
-    private List<String> imageUrls;
-
+public record NoticeDetailRes(
+        Long noticeId,
+        String name,
+        LocalDateTime startAt,
+        LocalDateTime endAt,
+        Location location,
+        String detailLocation,
+        String responsible,
+        String information,
+        String url,
+        NoticeType type,
+        NoticeCategory category,
+        NoticeScheduleType scheduleType,
+        boolean approved,
+        Division division,
+        DepartmentType department,
+        List<String> imageUrls
+) {
 }

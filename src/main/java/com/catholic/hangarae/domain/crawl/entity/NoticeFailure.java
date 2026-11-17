@@ -1,7 +1,14 @@
 package com.catholic.hangarae.domain.crawl.entity;
 
 import com.catholic.hangarae.global.apiPayLoad.common.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(name = "notice_failures", indexes = @Index(name = "idx_notice_failure_url", columnList = "url"))
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NoticeFailure extends BaseEntity {
 
     @Id

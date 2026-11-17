@@ -2,22 +2,19 @@ package com.catholic.hangarae.domain.notice.dto.response;
 
 import com.catholic.hangarae.domain.notice.vo.Location;
 import lombok.Builder;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
 @Builder
-public class NoticeListRes {
-
-    private Long noticeId;
-    private String name;
-    private LocalDateTime startAt;
-    private LocalDateTime endAt;
-    private Location location;
-    private String detailLocation;
-    private boolean approved;
-    private List<String> imageUrls;
-
+public record NoticeListRes(
+        Long noticeId,
+        String name,
+        LocalDateTime startAt,
+        LocalDateTime endAt,
+        Location location,
+        String detailLocation,
+        boolean approved,
+        List<String> imageUrls
+) {
 }

@@ -1,7 +1,9 @@
 package com.catholic.hangarae.domain.team.service;
 
-import com.catholic.hangarae.domain.team.dto.request.TeamRequest;
-import com.catholic.hangarae.domain.team.dto.response.TeamResponse;
+import com.catholic.hangarae.domain.team.dto.request.TeamCreateReq;
+import com.catholic.hangarae.domain.team.dto.request.TeamUpdateReq;
+import com.catholic.hangarae.domain.team.dto.response.TeamDetailRes;
+import com.catholic.hangarae.domain.team.dto.response.TeamListRes;
 import com.catholic.hangarae.domain.team.entity.Team;
 import com.catholic.hangarae.domain.team.vo.TeamCategory;
 import com.catholic.hangarae.global.apiPayLoad.response.Response;
@@ -10,13 +12,13 @@ import java.util.List;
 
 public interface TeamService {
 
-    Long createTeam(Long userId, TeamRequest.CreateReq req);
-    TeamResponse.DetailRes getTeamDetail(Long teamId);
-    List<TeamResponse.ListRes> getTeams(TeamCategory category, String keyword,boolean latestFirst);
+    Long createTeam(Long userId, TeamCreateReq req);
+    TeamDetailRes getTeamDetail(Long teamId);
+    List<TeamListRes> getTeams(TeamCategory category, String keyword,boolean latestFirst);
     Void deleteTeam(Long userId, Long teamId);
-    Long updateTeam(Long userId, Long teamId, TeamRequest.UpdateReq req);
+    Long updateTeam(Long userId, Long teamId, TeamUpdateReq req);
     void closeExpiredTeams();
-    List<TeamResponse.ListRes> getMyTeams(Long userId);
+    List<TeamListRes> getMyTeams(Long userId);
     Long closeTeam(Long userId, Long teamId);
 
 }
