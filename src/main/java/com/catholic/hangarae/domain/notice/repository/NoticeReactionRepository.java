@@ -11,6 +11,7 @@ public interface NoticeReactionRepository extends JpaRepository<NoticeReaction, 
 
     Optional<NoticeReaction> findByUserIdAndNoticeId(Long userId, Long noticeId);
     Long countByNoticeIdAndType(Long noticeId, NoticeReactionType type);
+    void deleteAllByNoticeId(Long noticeId);
 
 }
 
