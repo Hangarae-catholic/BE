@@ -300,6 +300,8 @@ public class NoticeServiceImpl implements NoticeService {
             throw new BusinessException(NoticeErrorCode.WRITER_DIFFERENCE);
         }
 
+        noticeReactionRepository.deleteAllByNoticeId(noticeId);
+
         List<NoticeImage> noticeImages =
                 noticeImageRepository.findAllByNoticeIdOrderByIdAsc(noticeId);
         noticeImageRepository.deleteAll(noticeImages);
@@ -308,6 +310,7 @@ public class NoticeServiceImpl implements NoticeService {
         noticeImages.forEach(noticeImage ->
                 imageRepository.delete(noticeImage.getImage())
         );
+
         noticeRepository.delete(notice);
         return null;
     }
