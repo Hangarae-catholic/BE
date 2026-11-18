@@ -28,6 +28,8 @@ dependencies {
 
 	// MinIO
 	implementation 'software.amazon.awssdk:s3:2.31.50'
+	// 업로드 이미지 축소, 휴대폰 사진 회전(EXIF) 반영
+	implementation 'net.coobird:thumbnailator:0.4.20'
 
 	// 학교 공지 HTML 파싱
 	implementation 'org.jsoup:jsoup:1.23.2'
