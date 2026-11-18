@@ -226,14 +226,18 @@ public class AuthServiceImpl implements AuthService {
         User user=userRepository.findById(userId)
                 .orElseThrow(()-> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
-        // 팀 게시글은 작성자 정보만 비우고 유지
+        // 팀 게시글과 등록한 공지는 작성자 정보만 비우고 유지
         entityManager.createQuery("update Team t set t.user = null where t.user.id = :userId")
+                .setParameter("userId", userId).executeUpdate();
+        entityManager.createQuery("update Notice n set n.user = null where n.user.id = :userId")
                 .setParameter("userId", userId).executeUpdate();
         for (String entity : new String[]{"UserDepartment", "UserInterest", "Provider", "NoticeReaction", "UserTeam"}) {
             entityManager.createQuery("delete from " + entity + " e where e.user.id = :userId")
                     .setParameter("userId", userId).executeUpdate();
         }
-        userRepository.delete(user);
+        // 위 일괄 쿼리는 영속성 컨텍스트를 거치지 않아, 엔티티 삭제 대신 쿼리로 지워야 남은 엔티티 참조 검사에 걸리지 않음
+        entityManager.createQuery("delete from User u where u.id = :userId")
+                .setParameter("userId", user.getId()).executeUpdate();
     }
 
     private void validateSignUpRequest(SignUpReq request) {
