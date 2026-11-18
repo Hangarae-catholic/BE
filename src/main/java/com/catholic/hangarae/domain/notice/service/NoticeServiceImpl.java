@@ -34,11 +34,9 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -65,8 +63,9 @@ public class NoticeServiceImpl implements NoticeService {
         }
 
         // 선택한 날짜의 행사 조회
-        List<Notice> notices = noticeRepository.findByDate(
-                selectedDate.atStartOfDay(), selectedDate.plusDays(1).atStartOfDay());
+        // 여러 게시판에 올라온 같은 공지는 하나만 표시
+        List<Notice> notices = NoticeDeduplicator.distinct(noticeRepository.findByDate(
+                selectedDate.atStartOfDay(), selectedDate.plusDays(1).atStartOfDay()));
 
         // 목록 응답 생성
         Map<Long, List<String>> imageUrls = findImageUrls(notices);
@@ -99,20 +98,14 @@ public class NoticeServiceImpl implements NoticeService {
 
         // 오늘 열리는 행사 중 관심 분야 점수 순으로 조회
         LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
-        List<Notice> notices = noticeRepository.findRecommendedNotices(
-                userId, today.atStartOfDay(), today.plusDays(1).atStartOfDay());
+        // 여러 게시판에 올라온 같은 공지는 하나만 추천
+        List<Notice> notices = NoticeDeduplicator.distinct(noticeRepository.findRecommendedNotices(
+                userId, today.atStartOfDay(), today.plusDays(1).atStartOfDay()));
+        notices = notices.subList(0, Math.max(0, Math.min(size, notices.size())));
 
-        // 여러 학과 게시판에 올라온 같은 공지는 제목과 기간이 같으면 하나만 추천
         Map<Long, List<String>> imageUrls = findImageUrls(notices);
         List<NoticeListRes> response = new ArrayList<>();
-        Set<String> shown = new HashSet<>();
         for (Notice notice : notices) {
-            if (response.size() >= size) {
-                break;
-            }
-            if (!shown.add(notice.getName() + "|" + notice.getStartAt() + "|" + notice.getEndAt())) {
-                continue;
-            }
             NoticeListRes item = NoticeListRes.builder()
                     .noticeId(notice.getId())
                     .name(notice.getName())
