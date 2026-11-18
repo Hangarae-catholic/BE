@@ -289,7 +289,7 @@ public class NoticeServiceImpl implements NoticeService {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
-        if(!notice.getUser().getId().equals(user.getId())){
+        if (notice.getUser() == null || !notice.getUser().getId().equals(user.getId())) { // 탈퇴한 작성자의 공지는 삭제 불가
             throw new BusinessException(NoticeErrorCode.WRITER_DIFFERENCE);
         }
 

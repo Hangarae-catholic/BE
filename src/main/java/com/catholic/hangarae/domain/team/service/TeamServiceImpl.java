@@ -200,7 +200,7 @@ public class TeamServiceImpl implements TeamService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
-        if (!team.getUser().getId().equals(user.getId())) {
+        if (team.getUser() == null || !team.getUser().getId().equals(user.getId())) { // 탈퇴한 작성자의 글은 수정·삭제 불가
             throw new BusinessException(TeamErrorCode.WRITER_DIFFERENCE);
         }
 
@@ -227,7 +227,7 @@ public class TeamServiceImpl implements TeamService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
-        if (!team.getUser().getId().equals(user.getId())) {
+        if (team.getUser() == null || !team.getUser().getId().equals(user.getId())) { // 탈퇴한 작성자의 글은 수정·삭제 불가
             throw new BusinessException(TeamErrorCode.WRITER_DIFFERENCE);
         }
 
@@ -310,7 +310,7 @@ public class TeamServiceImpl implements TeamService {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new BusinessException(TeamErrorCode.TEAM_NOT_FOUND));
 
-        if (!team.getUser().getId().equals(user.getId())) {
+        if (team.getUser() == null || !team.getUser().getId().equals(user.getId())) { // 탈퇴한 작성자의 글은 수정·삭제 불가
             throw new BusinessException(TeamErrorCode.WRITER_DIFFERENCE);
         }
 
