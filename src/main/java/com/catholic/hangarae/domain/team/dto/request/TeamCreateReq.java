@@ -30,10 +30,4 @@ public record TeamCreateReq(
 
         return !startAt.isAfter(endAt);
     }
-
-    @AssertTrue(message = "모집 시작일은 현재 시각 이후여야 합니다.")
-    public boolean isStartAtValid() {
-        if (startAt == null) return true;
-        return !startAt.isBefore(LocalDateTime.now());
-    }
 }
